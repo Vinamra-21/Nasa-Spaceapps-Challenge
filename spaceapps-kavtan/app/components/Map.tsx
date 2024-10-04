@@ -23,9 +23,15 @@ const DualMap = () => {
     <div style={{ height: '100vh', width: '100%' }}>
       <iframe
         src="/dual_map.html"  // This serves the dual_map.html file from the public folder
-        width="100%"
-        height="100%"
-        style={{ border: 'none' }}
+        width="80%"
+        height="80%"
+        style={{ 
+          width: '100%', 
+          height: '90%', 
+          border: 'none', 
+          display: 'block',
+          paddingTop: '10%',
+        }}
         title="Dual Map"
       />
     </div>

@@ -5,7 +5,7 @@ import folium.plugins
 from folium import TileLayer
 import time
 import warnings
-from flask import Flask, send_file
+from flask import Flask, send_file, request, jsonify  # Import request and jsonify
 from flask_cors import CORS
 
 # Suppress insecure request warnings if SSL verification is disabled
@@ -52,11 +52,11 @@ def get_item_count(collection_id):
 
 # Flask route to generate and serve the dual map
 @app.route('/')
-def generate_map() :
+def generate_map():
     print("1 done")
     # Get the number of items and fetch them
     number_of_items = get_item_count(collection_name)
-    print("1.5done")
+    print("1.5 done")
     items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}", verify=False).json()["features"]
     print("2 done")
     # Organize the items by their start date
@@ -120,5 +120,43 @@ def generate_map() :
     # Serve the map file
     return send_file("E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/dual_map.html")
 
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import finder
+import matplotlib.pyplot as plt
+import io
+import base64
+
+# Import your function (assuming it's in a file called co2_emission.py)
+from plotter2 import generate_co2_emission_graph
+
+# Initialize Flask app
+app = Flask(__name__)
+CORS(app)  # Enable CORS to allow access from your Next.js app
+
+@app.route('/search', methods=['POST'])
+def search_place():
+    # Get the place name from the request JSON body
+    data = request.json
+    place_name = data.get('place')
+    
+    if not place_name:
+        return jsonify({"error": "Place name is required"}), 400
+    
+    try:
+        # Generate CO2 emission graph for the given location
+        img = generate_co2_emission_graph(place_name)
+
+        # Return the graph as a base64-encoded image string
+        img_io = io.BytesIO()
+        plt.savefig(img_io, format='png')
+        img_io.seek(0)
+        img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+        
+        return jsonify({"message": f"CO2 emission graph for {place_name} generated successfully!", "image": img_base64})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
