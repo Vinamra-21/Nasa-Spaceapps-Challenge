@@ -25,3 +25,9 @@ body {
     text-wrap: balance;
   }
 }
+
+.funky-text {
+  font-family: 'Comic Sans MS', cursive, sans-serif; /* or any funky font */
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+  color: #ff4081;
+}
