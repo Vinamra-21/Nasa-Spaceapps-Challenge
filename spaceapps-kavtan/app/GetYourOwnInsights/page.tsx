@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import DualMap from '../components/Map';
 const MapComponent = dynamic(() => import('../components/Map'), {
   ssr: false, // Disable server-side rendering for this component
 });
@@ -6,8 +7,8 @@ const MapComponent = dynamic(() => import('../components/Map'), {
 export default function Home() {
   return (
     <div>
-      <h1>Interactive Map with Leaflet.js</h1>
-      <MapComponent />
+      <h1>Ban gya map</h1>
+      <DualMap />
     </div>
   );
 }
