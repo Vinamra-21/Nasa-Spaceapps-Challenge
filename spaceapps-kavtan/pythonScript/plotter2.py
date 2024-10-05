@@ -59,6 +59,10 @@ def create_aoi_polygon(latitude, longitude, offset=0.1):
 
 # Plot the CO2 emission data
 def plot_co2_emission(df, location_name):
+    if df.empty:
+        print("DataFrame is empty. No data to plot.")
+        return None  # Early return if DataFrame is empty
+    
     plt.figure(figsize=(20, 10))
     plt.plot(df["datetime"], df["max"], color="red", linestyle="-", linewidth=0.5, label="CO2 emissions")
     plt.legend()
@@ -66,19 +70,24 @@ def plot_co2_emission(df, location_name):
     plt.ylabel("CO2 emissions (gC/m²/year)")
     plt.title(f"CO2 Emission Values for {location_name} (Filtered Data)")
     plt.text(df["datetime"].iloc[0], df["max"].min(), "Source: NASA/NOAA OCO-2 MIP Top-Down CO₂ Budgets", fontsize=12, color="blue")
-    plt.savefig('E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/map.png')
+    image_path = 'E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/mapnew.png'
+    plt.savefig(image_path)
+    plt.close()  # Close the figure to free up memory
+    return image_path
 
 # Generate CO2 emission graph for a given location
 def generate_co2_emission_graph(location_name):
-    latitude, longitude = finder.latlongfind(location_name)
+    latitude, longitude = finder.latlongfind(location_name)  # Make sure this function works correctly
     aoi = create_aoi_polygon(latitude, longitude)
     items = fetch_collection_items(COLLECTION_NAME)
     stats = [generate_stats(item, aoi) for item in items]
     df = clean_stats(stats)
     if not df.empty:
-        plot_co2_emission(df, location_name)
+        return plot_co2_emission(df, location_name)  # Return the image path here
     else:
         print(f"No valid data found for {location_name} after filtering.")
+        return None
+
 
 # Main function
 def main():

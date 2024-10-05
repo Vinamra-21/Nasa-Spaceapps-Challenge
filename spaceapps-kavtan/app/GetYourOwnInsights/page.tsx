@@ -1,55 +1,94 @@
-// Home.tsx
 'use client';
+
 import { useState } from 'react';
+import axios from 'axios'; // For making HTTP requests
 import dynamic from 'next/dynamic';
 import styles from './getyourown.module.css'; // Import the CSS module
+import Image from 'next/image';
 
-// Dynamically import the Map component (with no SSR)
-const MapComponent = dynamic(() => import('../components/Map'), {
-  ssr: false,
-});
-const Map2 = dynamic(() => import('../components/Map2'), {
-  ssr: false,
-});
+// Dynamically import components without SSR
+const MapComponent = dynamic(() => import('../components/Map'), { ssr: true });
+const Map2 = dynamic(() => import('../components/Map2'), { ssr: false });
 
 export default function Home() {
-  const [selectedComponent, setSelectedComponent] = useState<number | null>(null); // Track the selected checkbox (component)
-  const [searchTerm, setSearchTerm] = useState<string>(''); // Track the search input
+  // States for search and modal
+  const [searchTerm, setSearchTerm] = useState<string>(''); // Track search input
+  const [searchResult, setSearchResult] = useState<string | null>(null); // State to store the search result
+  const [isModalOpen, setModalOpen] = useState<boolean>(false); // State for modal
 
-  // Handler for when a checkbox is clicked
-  const handleCheckboxChange = (index: number) => {
-    setSelectedComponent(index); // Set the selected component index
-  };
+  // Separate states for left and right panel components
+  const [selectedLeftComponent, setSelectedLeftComponent] = useState<number | null>(null);
+  const [selectedRightComponent, setSelectedRightComponent] = useState<number | null>(null);
 
   // Function to handle search submission
   const handleSearchSubmit = async (event: React.FormEvent) => {
-    event.preventDefault(); // Prevent default form submission
-    if (searchTerm.trim() === '') return; // Do nothing if the input is empty
-  };
+    event.preventDefault();
+    // console.log('searchTerm:', searchTerm);
+    if (searchTerm.trim() === '') return;
+    try {
+        const response = await axios.post('http://127.0.0.1:5000/search', {
+            place: searchTerm,
+        });
+        console.log('1')
+        console.log(searchTerm)
+        const { image_url, message } = response.data; // Destructure image_url
 
-  // Define what components to render based on the selected checkbox
-  const renderComponent = () => {
-    switch (selectedComponent) {
+        if (image_url) {
+            setSearchResult(image_url); // Set the image URL
+            console.log(searchResult);
+            setModalOpen(true); // Open modal when search result is received
+        } else {
+            setSearchResult('No data found.');
+        }
+
+        console.log(message);
+    } catch (error) {
+        console.error('Error fetching search results:', error);
+        setSearchResult('An error occurred while searching.');
+    }
+};
+
+  // Define what components to render based on the selected radio button in left panel
+  const renderLeftComponent = () => {
+    switch (selectedLeftComponent) {
       case 1:
         return <MapComponent />;
       case 2:
-        return <Map2 searchTerm={searchTerm} />; // Pass searchTerm to Map2
+        return <Map2 />;
       case 3:
-        return <div className={styles.contentBox}><h2>Component 3</h2></div>; // Placeholder for third component
+        return <div className={styles.contentBox}><h2>Component 3</h2></div>;
       case 4:
-        return <div className={styles.contentBox}><h2>Component 4</h2></div>; // Placeholder for fourth component
+        return <div className={styles.contentBox}><h2>Component 4</h2></div>;
       case 5:
-        return <div className={styles.contentBox}><h2>Component 5</h2></div>; // Placeholder for fifth component
+        return <div className={styles.contentBox}><h2>Component 5</h2></div>;
       default:
-        return <div className={styles.contentBox}><h2>Select a checkbox to render a component</h2></div>;
+        return <div className={styles.contentBox}><h2>Select a component to render</h2></div>;
+    }
+  };
+
+  // Define what components to render based on the selected radio button in right panel
+  const renderRightComponent = () => {
+    switch (selectedRightComponent) {
+      case 1:
+        return <MapComponent />;
+      case 2:
+        return <Map2 />;
+      case 3:
+        return <div className={styles.contentBox}><h2>Component 3</h2></div>;
+      case 4:
+        return <div className={styles.contentBox}><h2>Component 4</h2></div>;
+      case 5:
+        return <div className={styles.contentBox}><h2>Component 5</h2></div>;
+      default:
+        return <div className={styles.contentBox}><h2>Select a component to render</h2></div>;
     }
   };
 
   return (
     <div className={styles.container}>
-      {/* Search bar at the top */}
+      {/* Full-width search bar */}
       <div className={styles.searchContainer}>
-        <form onSubmit={handleSearchSubmit}>
+        <form onSubmit={handleSearchSubmit} className={styles.fullWidthForm}>
           <input
             type="text"
             placeholder="Enter a place name"
@@ -61,33 +100,74 @@ export default function Home() {
         </form>
       </div>
 
-      {/* Left panel for checkboxes */}
-      <div className={styles.leftPanel}>
-        <h1 className={styles.heading}>Select a Component</h1>
+      {/* Container for panels */}
+      <div className={styles.panelContainer}>
+        {/* Left panel for radio buttons */}
+        <div className={styles.leftPanel}>
+          <h1 className={styles.heading}>Select a Component (Left)</h1>
+          <div className={styles.radioContainer}>
+            {['Render Map Component', 'Render Component 2', 'Render Component 3', 'Render Component 4', 'Render Component 5'].map((label, index) => (
+              <label key={index} className={styles.radioLabel}>
+                <input
+                  type="radio"
+                  checked={selectedLeftComponent === index + 1}
+                  onChange={() => setSelectedLeftComponent(index + 1)}
+                  className={styles.radio}
+                />
+                <span className={styles.customRadio}></span>
+                {label}
+              </label>
+            ))}
+          </div>
+          <div className={styles.componentContainer}>
+            {renderLeftComponent()}
+          </div>
+        </div>
 
-        {/* Checkbox list */}
-        <div className={styles.checkboxContainer}>
-          {['Render Map Component', 'Render Component 2', 'Render Component 3', 'Render Component 4', 'Render Component 5'].map((label, index) => (
-            <label key={index} className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={selectedComponent === index + 1}
-                onChange={() => handleCheckboxChange(index + 1)}
-                className={styles.checkbox}
-              />
-              <span className={styles.customCheckbox}></span>
-              {label}
-            </label>
-          ))}
+        {/* Right panel for independent selection and rendering */}
+        <div className={styles.rightPanel}>
+          <h1 className={styles.heading}>Select a Component (Right)</h1>
+          <div className={styles.radioContainer}>
+            {['Render Map Component', 'Render Component 2', 'Render Component 3', 'Render Component 4', 'Render Component 5'].map((label, index) => (
+              <label key={index} className={styles.radioLabel}>
+                <input
+                  type="radio"
+                  checked={selectedRightComponent === index + 1} // Unique index for right panel
+                  onChange={() => setSelectedRightComponent(index + 1)} // Unique index for right panel
+                  className={styles.radio}
+                />
+                <span className={styles.customRadio}></span>
+                {label}
+              </label>
+            ))}
+          </div>
+          <div className={styles.componentContainer}>
+            {renderRightComponent()} {/* Render based on right panel selection */}
+          </div>
         </div>
       </div>
 
-      {/* Right panel for rendered component */}
-      <div className={styles.rightPanel}>
-        <div className={styles.componentContainer}>
-          {renderComponent()}
+      {/* Modal to display search results */}
+      {isModalOpen && (
+        <div className={styles.modal}>
+            <div className={styles.modalContent}>
+                <button className={styles.closeButton} onClick={() => setModalOpen(false)}>
+                    &times;
+                </button>
+                {searchResult ? (
+                    <Image src={searchResult} // Use the image URL directly
+                    alt="CO2 Emission Graph"
+                    className={styles.resultImage}
+                />
+                
+                
+                ) : (
+                    <p>No search result available.</p>
+                )}
+            </div>
         </div>
-      </div>
+    )}
+
     </div>
   );
 }

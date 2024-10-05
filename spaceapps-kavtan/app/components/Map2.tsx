@@ -1,52 +1,41 @@
-// Map2.tsx
-'use client';
+'use client'
 import { useEffect, useState } from 'react';
 
-interface Map2Props {
-  searchTerm: string; // Receive the search term as a prop
-}
-
-const Map2: React.FC<Map2Props> = ({ searchTerm }) => {
-  const [image, setImage] = useState<string | null>(null); // State to store the plot image
+const DualMap = () => {
+  const [htmlContent, setHtmlContent] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPlot = async () => {
-      if (searchTerm.trim() === '') return; // Do nothing if the input is empty
-
+    // Fetch the dual_map.html from the Flask server
+    const fetchHtmlMap = async () => {
       try {
-        const response = await fetch('http://localhost:5000/search', { // Adjust the URL to your Flask backend
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ place: searchTerm }), // Send the place name
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        if (data.image) {
-          setImage(data.image); // Set the image received from the backend
-        }
+        const response = await fetch('http://127.0.0.1:5000/map2'); // Flask URL serving the HTML
+        const htmlText = await response.text();
+        setHtmlContent(htmlText);  // Save the HTML content in the state
       } catch (error) {
-        console.error('Error fetching plot:', error);
+        console.error('Error fetching the map HTML:', error);
       }
     };
 
-    fetchPlot(); // Call the fetch function when the component mounts or searchTerm changes
-  }, [searchTerm]);
+    fetchHtmlMap();
+  }, []);
 
   return (
-    <div >
-      {image ? (
-        <img src={`data:image/png;base64,${image}`} alt="CO2 Emission Graph" className={styles.plotImage} />
-      ) : (
-        <div >Loading plot...</div>
-      )}
+    <div style={{ height: '100vh', width: '100%' }}>
+      <iframe
+        src="/dual_map_odiac.html"  // This serves the dual_map.html file from the public folder
+        width="80%"
+        height="80%"
+        style={{ 
+          width: '100%', 
+          height: '90%', 
+          border: 'none', 
+          display: 'block',
+          paddingTop: '10%',
+        }}
+        title="Dual Map"
+      />
     </div>
   );
 };
 
-export default Map2;
+export default DualMap;

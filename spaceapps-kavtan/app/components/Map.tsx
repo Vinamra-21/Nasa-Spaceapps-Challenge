@@ -8,7 +8,7 @@ const DualMap = () => {
     // Fetch the dual_map.html from the Flask server
     const fetchHtmlMap = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/'); // Flask URL serving the HTML
+        const response = await fetch('http://127.0.0.1:5000/map'); // Flask URL serving the HTML
         const htmlText = await response.text();
         setHtmlContent(htmlText);  // Save the HTML content in the state
       } catch (error) {
