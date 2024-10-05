@@ -27,54 +27,62 @@ export default function Home() {
   // Function to handle left panel search submission
   const handleLeftSearchSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (leftSearchTerm.trim() === '') return;
+    if (leftSearchTerm.trim() === '') {
+      setLeftSearchResult('Please enter a place name.'); // Provide feedback if the input is empty
+      return;
+    }
+
     try {
-        const response = await axios.post('http://127.0.0.1:5000/search', {
-            place: leftSearchTerm,
-        });
-        const { image_url, message } = response.data;
-        if (image_url) {
-            setLeftSearchResult(image_url);
-            setLeftModalOpen(true);
-        } else {
-            setLeftSearchResult('No data found.');
-        }
-        console.log(message);
+      const response = await axios.post('http://127.0.0.1:5000/search', {
+        place: leftSearchTerm,
+      });
+      const { image_url, message } = response.data;
+      if (image_url) {
+        setLeftSearchResult(image_url);
+        setLeftModalOpen(true);
+      } else {
+        setLeftSearchResult('No data found.');
+      }
+      console.log(message);
     } catch (error) {
-        console.error('Error fetching search results:', error);
-        setLeftSearchResult('An error occurred while searching.');
+      console.error('Error fetching search results:', error);
+      setLeftSearchResult('An error occurred while searching.');
     }
   };
 
   // Function to handle right panel search submission
   const handleRightSearchSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (rightSearchTerm.trim() === '') return;
+    if (rightSearchTerm.trim() === '') {
+      setRightSearchResult('Please enter a place name.'); // Provide feedback if the input is empty
+      return;
+    }
+
     try {
-        const response = await axios.post('http://127.0.0.1:5000/search', {
-            place: rightSearchTerm,
-        });
-        const { image_url, message } = response.data;
-        if (image_url) {
-            setRightSearchResult(image_url);
-            setRightModalOpen(true);
-        } else {
-            setRightSearchResult('No data found.');
-        }
-        console.log(message);
+      const response = await axios.post('http://127.0.0.1:5000/search', {
+        place: rightSearchTerm,
+      });
+      const { image_url, message } = response.data;
+      if (image_url) {
+        setRightSearchResult(image_url);
+        setRightModalOpen(true);
+      } else {
+        setRightSearchResult('No data found.');
+      }
+      console.log(message);
     } catch (error) {
-        console.error('Error fetching search results:', error);
-        setRightSearchResult('An error occurred while searching.');
+      console.error('Error fetching search results:', error);
+      setRightSearchResult('An error occurred while searching.');
     }
   };
 
-  // Define what components to render based on the selected radio button in left panel
+  // Pass search terms to the respective Map components
   const renderLeftComponent = () => {
     switch (selectedLeftComponent) {
       case 1:
-        return <MapComponent />;
+        return <MapComponent searchTerm={leftSearchTerm} />; // Pass the left search term
       case 2:
-        return <Map2 />;
+        return <Map2 searchTerm={leftSearchTerm} />; // Pass the left search term
       case 3:
         return <div className={styles.contentBox}><h2>Component 3</h2></div>;
       case 4:
@@ -86,13 +94,12 @@ export default function Home() {
     }
   };
 
-  // Define what components to render based on the selected radio button in right panel
   const renderRightComponent = () => {
     switch (selectedRightComponent) {
       case 1:
-        return <MapComponent />;
+        return <MapComponent searchTerm={rightSearchTerm} />; // Pass the right search term
       case 2:
-        return <Map2 />;
+        return <Map2 searchTerm={rightSearchTerm} />; // Pass the right search term
       case 3:
         return <div className={styles.contentBox}><h2>Component 3</h2></div>;
       case 4:
@@ -181,42 +188,44 @@ export default function Home() {
       {/* Left panel search result modal */}
       {isLeftModalOpen && (
         <div className={styles.modal}>
-            <div className={styles.modalContent}>
-                <button className={styles.closeButton} onClick={() => setLeftModalOpen(false)}>
-                    &times;
-                </button>
-                {leftSearchResult ? (
-                    <Image src={'/mapnew.png'}
-                    width={500}
-                    height={500}
-                    alt="Left Search Result"
-                    className={styles.resultImage}
-                />
-                ) : (
-                    <p>No search result available.</p>
-                )}
-            </div>
+          <div className={styles.modalContent}>
+            <button className={styles.closeButton} onClick={() => setLeftModalOpen(false)}>
+              &times;
+            </button>
+            {leftSearchResult ? (
+              <Image
+                src={leftSearchResult}
+                width={500}
+                height={500}
+                alt="Left Search Result"
+                className={styles.resultImage}
+              />
+            ) : (
+              <p>No search result available.</p>
+            )}
+          </div>
         </div>
       )}
 
       {/* Right panel search result modal */}
       {isRightModalOpen && (
         <div className={styles.modal}>
-            <div className={styles.modalContent}>
-                <button className={styles.closeButton} onClick={() => setRightModalOpen(false)}>
-                    &times;
-                </button>
-                {rightSearchResult ? (
-                    <Image src={'/mapnew.png'}
-                    width={300}
-                    height={300}
-                    alt="Right Search Result"
-                    className={styles.resultImage}
-                />
-                ) : (
-                    <p>No search result available.</p>
-                )}
-            </div>
+          <div className={styles.modalContent}>
+            <button className={styles.closeButton} onClick={() => setRightModalOpen(false)}>
+              &times;
+            </button>
+            {rightSearchResult ? (
+              <Image
+                src={rightSearchResult}
+                width={300}
+                height={300}
+                alt="Right Search Result"
+                className={styles.resultImage}
+              />
+            ) : (
+              <p>No search result available.</p>
+            )}
+          </div>
         </div>
       )}
     </div>

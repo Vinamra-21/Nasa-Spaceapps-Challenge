@@ -61,8 +61,8 @@ def generate_map():
     color_map = "purd"
 
     # Default year is 2016 if not provided (could be made dynamic based on input)
-    input_year = '2016'
-
+    input_year = request.args.get('year', '2016')  # Fetch the input_year from query params
+    print(input_year)
     # Check if the year exists in the dataset
     if input_year in items_by_year:
         item = items_by_year[input_year]
@@ -88,17 +88,18 @@ def generate_map():
         # Add the layer to the map
         map_layer.add_to(map_)
 
-        # Save the map as an HTML file
-        map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/co2{input_year}.html"
+        # Save the map as an HTML file with the year as part of the filename
+        map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/co2_{input_year}.html"
         map_.save(map_file_path)
         
-        print(f"Map for {input_year} has been saved as 'co2.html'.")
+        print(f"Map for {input_year} has been saved as 'co2_{input_year}.html'.")
 
         return send_file(map_file_path)
 
     else:
         print(f"No data available for the year {input_year}.")
         return jsonify({"error": f"No data available for the year {input_year}."}), 404
+
 
 ########################################################################################################
 
