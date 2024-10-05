@@ -60,10 +60,11 @@ def generate_map():
     rescale_values = {"max": 450, "min": 0}
     color_map = "purd"
 
-    # Default year is 2016 if not provided (could be made dynamic based on input)
+    # Fetch the input year from query params, default to '2016' if not provided
     input_year = request.args.get('year', '2016')  # Fetch the input_year from query params
-    print(input_year)
-    # Check if the year exists in the dataset
+    print(f"Year requested: {input_year}")
+    
+    # Check if the requested year exists in the dataset
     if input_year in items_by_year:
         item = items_by_year[input_year]
 
@@ -75,7 +76,7 @@ def generate_map():
             f"&rescale={rescale_values['min']},{rescale_values['max']}"
         ).json()
 
-        # Set the location (latitude and longitude of the area of interest, California here)
+        # Set the location (latitude and longitude of the area of interest, e.g., California)
         map_ = folium.Map(location=(34, -118), zoom_start=6)
 
         # Define the map layer for the chosen year
@@ -92,13 +93,14 @@ def generate_map():
         map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/co2_{input_year}.html"
         map_.save(map_file_path)
         
-        print(f"Map for {input_year} has been saved as 'co2_{input_year}.html'.")
+        print(f"Map for {input_year} has been saved as '{map_file_path}'.")
 
         return send_file(map_file_path)
 
     else:
         print(f"No data available for the year {input_year}.")
         return jsonify({"error": f"No data available for the year {input_year}."}), 404
+
 
 
 ########################################################################################################
