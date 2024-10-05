@@ -16,11 +16,13 @@ warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 app = Flask(__name__)
 CORS(app)  # Enable CORS to allow access from your Next.js app
 
-# API endpoints for STAC and RASTER
+
+# Provide the STAC and RASTER API endpoints
 STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
 RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
-collection_name = "tm54dvar-ch4flux-monthgrid-v1"
+collection_name = "oco2-mip-co2budget-yeargrid-v1"
 
+# Define the function to get item count
 def get_item_count(collection_id):
     count = 0
     items_url = f"{STAC_API_URL}/collections/{collection_id}/items"
@@ -28,7 +30,7 @@ def get_item_count(collection_id):
     while True:
         try:
             response = requests.get(items_url, verify=False, timeout=10)
-            response.raise_for_status()
+            response.raise_for_status()  # Raise an error for bad responses
         except requests.exceptions.RequestException as e:
             print(f"Error: {e}. Retrying in 5 seconds...")
             time.sleep(5)
@@ -43,51 +45,62 @@ def get_item_count(collection_id):
     
     return count
 
-@app.route('/map', methods=['GET'])
+@app.route('/co2', methods=['GET'])
 def generate_map():
+    # Fetch the number of items
     number_of_items = get_item_count(collection_name)
-    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}", verify=False).json()["features"]
+    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}").json()["features"]
 
-    # Organize items by their start date
-    items = {item["properties"]["start_datetime"][:10]: item for item in items}
+    # Create a dictionary where the start datetime values for each granule are more explicitly queried by year
+    items_by_year = {item["properties"]["start_datetime"][:4]: item for item in items}
     
-    asset_name = "fossil"
-    
-    rescale_values = {
-        "max": items[list(items.keys())[0]]["assets"][asset_name]["raster:bands"][0]["histogram"]["max"],
-        "min": items[list(items.keys())[0]]["assets"][asset_name]["raster:bands"][0]["histogram"]["min"]
-    }
-
+    # Set the asset name for fossil fuel ("ff")
+    asset_name = "ff"
+    # Rescale values for visualization (adjusted as per GHG Center scale)
+    rescale_values = {"max": 450, "min": 0}
     color_map = "purd"
 
-    # Fetch CH₄ flux data
-    ch4_flux_1 = requests.get(
-        f"{RASTER_API_URL}/collections/{items['2016-12-01']['collection']}/items/{items['2016-12-01']['id']}/tilejson.json?"
-        f"&assets={asset_name}&color_formula=gamma+r+1.05&colormap_name={color_map}"
-        f"&rescale={rescale_values['min']},{rescale_values['max']}",
-        verify=False
-    ).json()
+    # Default year is 2016 if not provided (could be made dynamic based on input)
+    input_year = '2016'
 
-    ch4_flux_2 = requests.get(
-        f"{RASTER_API_URL}/collections/{items['1999-12-01']['collection']}/items/{items['1999-12-01']['id']}/tilejson.json?"
-        f"&assets={asset_name}&color_formula=gamma+r+1.05&colormap_name={color_map}"
-        f"&rescale={rescale_values['min']},{rescale_values['max']}",
-        verify=False
-    ).json()
+    # Check if the year exists in the dataset
+    if input_year in items_by_year:
+        item = items_by_year[input_year]
 
-    # Create a side-by-side map of California
-    map_ = folium.plugins.DualMap(location=(34, -118), zoom_start=6)
+        # Fetch CO2 flux data for the input year
+        co2_flux = requests.get(
+            f"{RASTER_API_URL}/collections/{item['collection']}/items/{item['id']}/tilejson.json?"
+            f"&assets={asset_name}"
+            f"&color_formula=gamma+r+1.05&colormap_name={color_map}"
+            f"&rescale={rescale_values['min']},{rescale_values['max']}"
+        ).json()
 
-    # Add layers to the map
-    folium.TileLayer(tiles=ch4_flux_1["tiles"][0], attr="GHG", opacity=0.8).add_to(map_.m1)
-    folium.TileLayer(tiles=ch4_flux_2["tiles"][0], attr="GHG", opacity=0.8).add_to(map_.m2)
+        # Set the location (latitude and longitude of the area of interest, California here)
+        map_ = folium.Map(location=(34, -118), zoom_start=6)
 
-    # Save the map as an HTML file
-    map_file_path = "E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan\public\dual_map.html"  # Use a relative path
-    map_.save(map_file_path)
+        # Define the map layer for the chosen year
+        map_layer = folium.TileLayer(
+            tiles=co2_flux["tiles"][0],  # Path to the tile
+            attr="GHG",  # Attribution
+            opacity=0.5,  # Transparency
+        )
 
-    return send_file(map_file_path)
+        # Add the layer to the map
+        map_layer.add_to(map_)
 
+        # Save the map as an HTML file
+        map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/co2{input_year}.html"
+        map_.save(map_file_path)
+        
+        print(f"Map for {input_year} has been saved as 'co2.html'.")
+
+        return send_file(map_file_path)
+
+    else:
+        print(f"No data available for the year {input_year}.")
+        return jsonify({"error": f"No data available for the year {input_year}."}), 404
+
+########################################################################################################
 
 @app.route('/search', methods=['POST'])
 def search_place():

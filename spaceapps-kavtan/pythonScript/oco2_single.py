@@ -1,7 +1,13 @@
 import requests
 import folium
-from folium import TileLayer
+import folium.plugins
+import time
+import warnings
+from flask import Flask, send_file, request, jsonify
+from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app)
 # Provide the STAC and RASTER API endpoints
 STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
 RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
@@ -27,51 +33,58 @@ def get_item_count(collection_id):
         items_url = next[0]["href"]
     return count
 
-# Fetch the number of items
-number_of_items = get_item_count(collection_name)
-items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}").json()["features"]
+@app.route('/co2',methods=['GET'])
+def generate_map():
+    # Fetch the number of items
+    number_of_items = get_item_count(collection_name)
+    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}").json()["features"]
 
-# Create a dictionary where the start datetime values for each granule are more explicitly queried by year
-items_by_year = {item["properties"]["start_datetime"][:4]: item for item in items}
+    # Create a dictionary where the start datetime values for each granule are more explicitly queried by year
+    items_by_year = {item["properties"]["start_datetime"][:4]: item for item in items}
 
-# Set the asset name for fossil fuel ("ff")
-asset_name = "ff"
+    # Set the asset name for fossil fuel ("ff")
+    asset_name = "ff"
 
-# Rescale values for visualization (adjusted as per GHG Center scale)
-rescale_values = {"max": 450, "min": 0}
-color_map = "purd"
+    # Rescale values for visualization (adjusted as per GHG Center scale)
+    rescale_values = {"max": 450, "min": 0}
+    color_map = "purd"
 
-# Input: User provides a year
-input_year = input("Enter the year (e.g., 2020): ")
+    # Input: User provides a year
+    input_year = request.args.get('year', 2020)  # Default year is 2020 if not provided
 
-# Check if the year exists in the dataset
-if input_year in items_by_year:
-    item = items_by_year[input_year]
+    # Check if the year exists in the dataset
+    if input_year in items_by_year:
+        item = items_by_year[input_year]
 
-    # Fetch CO2 flux data for the input year
-    co2_flux = requests.get(
-        f"{RASTER_API_URL}/collections/{item['collection']}/items/{item['id']}/tilejson.json?"
-        f"&assets={asset_name}"
-        f"&color_formula=gamma+r+1.05&colormap_name={color_map}"
-        f"&rescale={rescale_values['min']},{rescale_values['max']}"
-    ).json()
+        # Fetch CO2 flux data for the input year
+        co2_flux = requests.get(
+            f"{RASTER_API_URL}/collections/{item['collection']}/items/{item['id']}/tilejson.json?"
+            f"&assets={asset_name}"
+            f"&color_formula=gamma+r+1.05&colormap_name={color_map}"
+            f"&rescale={rescale_values['min']},{rescale_values['max']}"
+        ).json()
 
-    # Set the location (latitude and longitude of the area of interest, California here)
-    map_ = folium.Map(location=(34, -118), zoom_start=6)
+        # Set the location (latitude and longitude of the area of interest, California here)
+        map_ = folium.Map(location=(34, -118), zoom_start=6)
 
-    # Define the map layer for the chosen year
-    map_layer = TileLayer(
-        tiles=co2_flux["tiles"][0],  # Path to the tile
-        attr="GHG",  # Attribution
-        opacity=0.5,  # Transparency
-    )
+        # Define the map layer for the chosen year
+        map_layer = folium.TileLayer(
+            tiles=co2_flux["tiles"][0],  # Path to the tile
+            attr="GHG",  # Attribution
+            opacity=0.5,  # Transparency
+        )
 
-    # Add the layer to the map
-    map_layer.add_to(map_)
+        # Add the layer to the map
+        map_layer.add_to(map_)
 
-    # Display the map
-    map_.save("co2_map.html")
-    print(f"Map for {input_year} has been saved as 'co2_map.html'.")
+        # Save the map as an HTML file (adjust path for Linux/Ubuntu)
+        map_file_path = "E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan\public\co2.html"  # Use a relative path
+        map_.save(map_file_path)
+        
+        print(f"Map for {input_year} has been saved as 'co2_map.html'.")
 
-else:
-    print(f"No data available for the year {input_year}.")
+        return send_file(map_file_path)
+      
+    else:
+        print(f"No data available for the year {input_year}.")
+        return jsonify({"error": f"No data available for the year {input_year}."}), 404

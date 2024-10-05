@@ -11,42 +11,62 @@ const MapComponent = dynamic(() => import('../components/Map'), { ssr: true });
 const Map2 = dynamic(() => import('../components/Map2'), { ssr: false });
 
 export default function Home() {
-  // States for search and modal
-  const [searchTerm, setSearchTerm] = useState<string>(''); // Track search input
-  const [searchResult, setSearchResult] = useState<string | null>(null); // State to store the search result
-  const [isModalOpen, setModalOpen] = useState<boolean>(false); // State for modal
+  // Separate states for left and right panel search
+  const [leftSearchTerm, setLeftSearchTerm] = useState<string>(''); 
+  const [leftSearchResult, setLeftSearchResult] = useState<string | null>(null);
+  const [isLeftModalOpen, setLeftModalOpen] = useState<boolean>(false);
 
-  // Separate states for left and right panel components
+  const [rightSearchTerm, setRightSearchTerm] = useState<string>(''); 
+  const [rightSearchResult, setRightSearchResult] = useState<string | null>(null);
+  const [isRightModalOpen, setRightModalOpen] = useState<boolean>(false);
+
+  // Separate states for selected components
   const [selectedLeftComponent, setSelectedLeftComponent] = useState<number | null>(null);
   const [selectedRightComponent, setSelectedRightComponent] = useState<number | null>(null);
 
-  // Function to handle search submission
-  const handleSearchSubmit = async (event: React.FormEvent) => {
+  // Function to handle left panel search submission
+  const handleLeftSearchSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // console.log('searchTerm:', searchTerm);
-    if (searchTerm.trim() === '') return;
+    if (leftSearchTerm.trim() === '') return;
     try {
         const response = await axios.post('http://127.0.0.1:5000/search', {
-            place: searchTerm,
+            place: leftSearchTerm,
         });
-        console.log('1')
-        console.log(searchTerm)
-        const { image_url, message } = response.data; // Destructure image_url
-
+        const { image_url, message } = response.data;
         if (image_url) {
-            setSearchResult(image_url); // Set the image URL
-            console.log(searchResult);
-            setModalOpen(true); // Open modal when search result is received
+            setLeftSearchResult(image_url);
+            setLeftModalOpen(true);
         } else {
-            setSearchResult('No data found.');
+            setLeftSearchResult('No data found.');
         }
-
         console.log(message);
     } catch (error) {
         console.error('Error fetching search results:', error);
-        setSearchResult('An error occurred while searching.');
+        setLeftSearchResult('An error occurred while searching.');
     }
-};
+  };
+
+  // Function to handle right panel search submission
+  const handleRightSearchSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (rightSearchTerm.trim() === '') return;
+    try {
+        const response = await axios.post('http://127.0.0.1:5000/search', {
+            place: rightSearchTerm,
+        });
+        const { image_url, message } = response.data;
+        if (image_url) {
+            setRightSearchResult(image_url);
+            setRightModalOpen(true);
+        } else {
+            setRightSearchResult('No data found.');
+        }
+        console.log(message);
+    } catch (error) {
+        console.error('Error fetching search results:', error);
+        setRightSearchResult('An error occurred while searching.');
+    }
+  };
 
   // Define what components to render based on the selected radio button in left panel
   const renderLeftComponent = () => {
@@ -86,24 +106,22 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
-      {/* Full-width search bar */}
-      <div className={styles.searchContainer}>
-        <form onSubmit={handleSearchSubmit} className={styles.fullWidthForm}>
-          <input
-            type="text"
-            placeholder="Enter a place name"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className={styles.searchInput}
-          />
-          <button type="submit" className={styles.searchButton}>Search</button>
-        </form>
-      </div>
-
-      {/* Container for panels */}
       <div className={styles.panelContainer}>
-        {/* Left panel for radio buttons */}
+        {/* Left panel with search and component selection */}
         <div className={styles.leftPanel}>
+          <h1 className={styles.heading}>Left Panel Search</h1>
+          <form onSubmit={handleLeftSearchSubmit} className={styles.fullWidthForm}>
+            <input
+              type="text"
+              placeholder="Enter a place name"
+              value={leftSearchTerm}
+              onChange={(e) => setLeftSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+            <button type="submit" className={styles.searchButton}>Search</button>
+          </form>
+
+          {/* Left panel component selection */}
           <h1 className={styles.heading}>Select a Component (Left)</h1>
           <div className={styles.radioContainer}>
             {['Render Map Component', 'Render Component 2', 'Render Component 3', 'Render Component 4', 'Render Component 5'].map((label, index) => (
@@ -124,8 +142,21 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right panel for independent selection and rendering */}
+        {/* Right panel with search and component selection */}
         <div className={styles.rightPanel}>
+          <h1 className={styles.heading}>Right Panel Search</h1>
+          <form onSubmit={handleRightSearchSubmit} className={styles.fullWidthForm}>
+            <input
+              type="text"
+              placeholder="Enter a place name"
+              value={rightSearchTerm}
+              onChange={(e) => setRightSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+            <button type="submit" className={styles.searchButton}>Search</button>
+          </form>
+
+          {/* Right panel component selection */}
           <h1 className={styles.heading}>Select a Component (Right)</h1>
           <div className={styles.radioContainer}>
             {['Render Map Component', 'Render Component 2', 'Render Component 3', 'Render Component 4', 'Render Component 5'].map((label, index) => (
@@ -147,27 +178,47 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Modal to display search results */}
-      {isModalOpen && (
+      {/* Left panel search result modal */}
+      {isLeftModalOpen && (
         <div className={styles.modal}>
             <div className={styles.modalContent}>
-                <button className={styles.closeButton} onClick={() => setModalOpen(false)}>
+                <button className={styles.closeButton} onClick={() => setLeftModalOpen(false)}>
                     &times;
                 </button>
-                {searchResult ? (
-                    <Image src={searchResult} // Use the image URL directly
-                    alt="CO2 Emission Graph"
+                {leftSearchResult ? (
+                    <Image src={'/mapnew.png'}
+                    width={500}
+                    height={500}
+                    alt="Left Search Result"
                     className={styles.resultImage}
                 />
-                
-                
                 ) : (
                     <p>No search result available.</p>
                 )}
             </div>
         </div>
-    )}
+      )}
 
+      {/* Right panel search result modal */}
+      {isRightModalOpen && (
+        <div className={styles.modal}>
+            <div className={styles.modalContent}>
+                <button className={styles.closeButton} onClick={() => setRightModalOpen(false)}>
+                    &times;
+                </button>
+                {rightSearchResult ? (
+                    <Image src={'/mapnew.png'}
+                    width={300}
+                    height={300}
+                    alt="Right Search Result"
+                    className={styles.resultImage}
+                />
+                ) : (
+                    <p>No search result available.</p>
+                )}
+            </div>
+        </div>
+      )}
     </div>
   );
 }
