@@ -71,7 +71,7 @@ def print_sensitivity_results(base_emissions, results):
     return superstr
 
 def generate_output(data):
-    genai.configure(api_key="AIzaSyAQ1oUSI5xhsY03Bo8VsV-o4ilnVKCOrT4")
+    genai.configure(api_key=API_KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
     input_text = (
         "You are a model that analyses the impact of land use and population on carbon emissions. "
