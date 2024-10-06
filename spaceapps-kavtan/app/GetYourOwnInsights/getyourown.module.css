@@ -1,9 +1,11 @@
+/* General Container */
 .container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f4f4f9;
+  background: linear-gradient(135deg, #0070f3, #ff0076);
   padding: 20px;
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Full-width search bar styling */
@@ -21,11 +23,20 @@
 
 .searchInput {
   padding: 10px;
+  color: black;
   font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 8px;
   margin-right: 10px;
+  margin-bottom: 10px;
   flex: 1; /* Make input take available space */
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #0070f3;
+  box-shadow: 0 0 10px rgba(0, 112, 243, 0.4);
 }
 
 .searchButton {
@@ -34,12 +45,20 @@
   background-color: #0070f3;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .searchButton:hover {
-  background-color: #005bb5;
+  background-color: #ff0076;
+  transform: scale(1.05);
+}
+
+/* Loading Indicator */
+.loadingIndicator {
+  font-size: 16px;
+  color: #fff;
 }
 
 /* Layout for panels */
@@ -47,39 +66,43 @@
   display: flex;
   flex: 1;
   gap: 20px;
+  transition: transform 0.5s ease-in-out;
 }
 
-/* Styling for the left panel */
-.leftPanel {
+.panelContainer:hover {
+  transform: scale(1.02);
+}
+
+/* Panel Styling */
+.leftPanel, .rightPanel {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   padding: 20px;
-  background-color: #111;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.5s ease, transform 0.5s ease;
 }
 
-/* Styling for the right panel */
-.rightPanel {
-  flex: 1; /* Make right panel mirror the left */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 20px;
-  background-color: #111;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.leftPanel:hover, .rightPanel:hover {
+  transform: translateY(-10px);
+  background-color: #1a1a1a;
 }
 
+/* Headings */
 .heading {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: #fff;
   margin-bottom: 20px;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
 }
 
+/* Radio Buttons and Selection */
 .radioContainer {
   display: flex;
   flex-direction: column;
@@ -89,11 +112,16 @@
 .radioLabel {
   display: flex;
   align-items: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #fff;
   cursor: pointer;
   position: relative;
-  padding-left: 35px;
+  padding-left: 40px;
+  transition: color 0.3s ease;
+}
+
+.radioLabel:hover {
+  color: #0070f3;
 }
 
 .radio {
@@ -106,15 +134,16 @@
   position: absolute;
   left: 0;
   top: 0;
-  height: 25px;
-  width: 25px;
+  height: 30px;
+  width: 30px;
   background-color: #666;
   border-radius: 50%;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .radio:checked + .customRadio {
   background-color: #0070f3;
+  box-shadow: 0 0 10px rgba(0, 112, 243, 0.7);
 }
 
 .radio:checked + .customRadio::after {
@@ -123,10 +152,10 @@
   display: block;
   left: 9px;
   top: 5px;
-  width: 6px;
-  height: 12px;
+  width: 8px;
+  height: 16px;
   border: solid white;
-  border-width: 0 3px 3px 0;
+  border-width: 0 4px 4px 0;
   transform: rotate(45deg);
 }
 
@@ -134,16 +163,22 @@
   background-color: #444;
 }
 
+/* Component Container */
 .componentContainer {
-  flex: 1; /* Allow component container to expand */
-  background-color: #111;
+  flex: 1;
+  background-color: #1a1a1a;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  transition: background-color 0.5s ease;
+}
+
+.componentContainer:hover {
+  background-color: #282828;
 }
 
 .contentBox {
@@ -151,7 +186,7 @@
   color: #0070f3;
 }
 
-/* Modal styling */
+/* Modal Styling */
 .modal {
   display: flex;
   position: fixed;
@@ -159,18 +194,22 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   justify-content: center;
   align-items: center;
+  transition: opacity 0.3s ease;
 }
 
 .modalContent {
   background-color: white;
-  padding: 20px;
-  border-radius: 5px;
+  color: black;
+  padding: 30px;
+  border-radius: 15px;
   width: 80%;
-  max-width: 600px;
+  max-width: 700px;
   text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.5s ease;
 }
 
 .closeButton {
@@ -178,20 +217,49 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: #0070f3;
 }
 
 .resultImage {
   max-width: 100%;
   height: auto;
+  border-radius: 10px;
+  transition: transform 0.5s ease;
 }
-/* Custom styles for Earth model animation */
+
+.resultImage:hover {
+  transform: scale(1.05);
+}
+
+/* Earth Container */
 .earth-container {
   position: relative;
-  overflow: hidden; /* Prevent overflow of the canvas */
-  height: 300px; /* Adjust height as needed */
-  transition: transform 0.5s ease; /* Smooth transition for size change */
+  overflow: hidden;
+  height: 300px;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
 }
 
 .earth-container:hover {
-  transform: scale(0.8); /* Scale down when hovered */
+  transform: scale(1.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Keyframes for Modal Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+
 }

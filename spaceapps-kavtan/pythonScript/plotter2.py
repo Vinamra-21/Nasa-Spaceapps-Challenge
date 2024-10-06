@@ -62,8 +62,6 @@ def plot_co2_emission(df, location_name):
     if df.empty:
         print("DataFrame is empty. No data to plot.")
         return None  # Early return if DataFrame is empty
-    
-    plt.figure(figsize=(20, 10))
     plt.plot(df["datetime"], df["max"], color="red", linestyle="-", linewidth=0.5, label="CO2 emissions")
     plt.legend()
     plt.xlabel("Years")

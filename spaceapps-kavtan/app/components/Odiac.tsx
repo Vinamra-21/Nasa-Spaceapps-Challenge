@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const CO2 = () => {
+const co2 = () => {
   const [htmlUrl, setHtmlUrl] = useState<string | null>(null); // To store the full URL to the HTML file
   const [loading, setLoading] = useState<boolean>(false); // Loading state
   const [error, setError] = useState<boolean>(false); // Error state
@@ -13,7 +13,7 @@ const CO2 = () => {
     setError(false); // Reset error state
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/odiac?year=${year}`); // Add year as a query parameter
+      const response = await fetch(`http://127.0.0.1:5000/co2`); // Add year as a query parameter
       if (response.ok) {
         const htmlBlob = await response.blob(); // Receive the HTML file as a blob
         const url = URL.createObjectURL(htmlBlob); // Create a URL object to use in iframe
@@ -65,4 +65,4 @@ const CO2 = () => {
   );
 };
 
-export default CO2;
+export default co2;

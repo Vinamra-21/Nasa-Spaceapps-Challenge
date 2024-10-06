@@ -2,31 +2,30 @@
 import { useEffect, useState } from 'react';
 
 const CO2 = () => {
-  const [htmlUrl, setHtmlUrl] = useState<string | null>(null); // To store the full URL to the HTML file
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
-  const [error, setError] = useState<boolean>(false); // Error state
+  const [htmlUrl, setHtmlUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
   const [inputYear, setInputYear] = useState<string>('2016'); // Default year
 
   // Function to fetch the HTML map
   const fetchHtmlMap = async (year: string) => {
-    setLoading(true); // Start loading
-    setError(false); // Reset error state
+    setLoading(true);
+    setError(false);
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/co2?year=${year}`); // Add year as a query parameter
+      const response = await fetch(`http://127.0.0.1:5000/co2?year=${year}`); // Flask backend
       if (response.ok) {
-        const htmlBlob = await response.blob(); // Receive the HTML file as a blob
-        const url = URL.createObjectURL(htmlBlob); // Create a URL object to use in iframe
+        const htmlBlob = await response.blob();
+        const url = URL.createObjectURL(htmlBlob);
         setHtmlUrl(url); // Set the iframe source to the blob URL
       } else {
-        console.error('Failed to fetch the map HTML');
-        setError(true); // Set error state
+        setError(true);
       }
     } catch (error) {
       console.error('Error fetching the map HTML:', error);
-      setError(true); // Set error state
+      setError(true);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -40,24 +39,23 @@ const CO2 = () => {
       <div>
         <label>Enter Year: </label>
         <input
+          style={{ color: 'black' }}
           type="text"
           value={inputYear}
-          onChange={(e) => setInputYear(e.target.value)} // Update year based on input
+          onChange={(e) => setInputYear(e.target.value)}
         />
-        <button onClick={() => fetchHtmlMap(inputYear)}>Load Map</button> {/* Manually trigger map load */}
+        <button onClick={() => fetchHtmlMap(inputYear)}>Load Map</button>
       </div>
       {loading ? (
-        <p>Loading map...</p> // Display a loading message while fetching
+        <p>Loading map...</p>
       ) : error ? (
-        <p>Failed to load map. Please try again later.</p> // Handle errors
+        <p>Failed to load map. Please try again later.</p>
       ) : htmlUrl ? (
         <iframe
-          src={htmlUrl}  // Set the iframe src to the blob URL
+          src={htmlUrl}
           width="100%"
           height="100%"
-          style={{
-            border: 'none',
-          }}
+          style={{ border: 'none' }}
           title="CO2"
         />
       ) : null}
