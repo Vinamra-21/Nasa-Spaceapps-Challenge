@@ -9,12 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^8.17.9",
     "axios": "^1.7.7",
     "leaflet": "^1.9.4",
     "next": "14.2.14",
     "react": "^18",
     "react-dom": "^18",
-    "react-leaflet": "^4.2.1"
+    "react-leaflet": "^4.2.1",
+    "three": "^0.169.0"
   },
   "devDependencies": {
     "@types/node": "^20",

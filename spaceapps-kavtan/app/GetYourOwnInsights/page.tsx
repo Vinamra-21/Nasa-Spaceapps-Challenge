@@ -7,8 +7,11 @@ import styles from './getyourown.module.css'; // Import the CSS module
 import Image from 'next/image';
 
 // Dynamically import components without SSR
-const MapComponent = dynamic(() => import('../components/Map'), { ssr: true });
-const Map2 = dynamic(() => import('../components/Map2'), { ssr: false });
+const CO2 = dynamic(() => import('../components/CO2'), { ssr: true });
+const Micasa = dynamic(() => import('../components/Micasa'), { ssr: false });
+const Odiac = dynamic(() => import('../components/Odiac'), { ssr: true });
+const Wetlands = dynamic(() => import('../components/Wetlands'), { ssr: false });
+
 
 export default function Home() {
   // Separate states for left and right panel search
@@ -80,15 +83,13 @@ export default function Home() {
   const renderLeftComponent = () => {
     switch (selectedLeftComponent) {
       case 1:
-        return <MapComponent searchTerm={leftSearchTerm} />; // Pass the left search term
+        return <CO2 searchTerm={leftSearchTerm} />; // Pass the left search term
       case 2:
-        return <Map2 searchTerm={leftSearchTerm} />; // Pass the left search term
+        return <Micasa searchTerm={leftSearchTerm} />; // Pass the left search term
       case 3:
-        return <div className={styles.contentBox}><h2>Component 3</h2></div>;
+        return <Odiac searchTerm={leftSearchTerm} />; // Pass the left search term
       case 4:
-        return <div className={styles.contentBox}><h2>Component 4</h2></div>;
-      case 5:
-        return <div className={styles.contentBox}><h2>Component 5</h2></div>;
+        return <Wetlands searchTerm={leftSearchTerm} />; // Pass the left search term
       default:
         return <div className={styles.contentBox}><h2>Select a component to render</h2></div>;
     }
@@ -97,15 +98,14 @@ export default function Home() {
   const renderRightComponent = () => {
     switch (selectedRightComponent) {
       case 1:
-        return <MapComponent searchTerm={rightSearchTerm} />; // Pass the right search term
+        return <CO2 searchTerm={rightSearchTerm} />; // Pass the right search term
       case 2:
-        return <Map2 searchTerm={rightSearchTerm} />; // Pass the right search term
+        return <Micasa searchTerm={rightSearchTerm} />; // Pass the right search term
       case 3:
-        return <div className={styles.contentBox}><h2>Component 3</h2></div>;
+        return <Odiac searchTerm={rightSearchTerm} />; // Pass the right search term
       case 4:
-        return <div className={styles.contentBox}><h2>Component 4</h2></div>;
-      case 5:
-        return <div className={styles.contentBox}><h2>Component 5</h2></div>;
+        return <Wetlands searchTerm={rightSearchTerm} />; // Pass the right search term
+
       default:
         return <div className={styles.contentBox}><h2>Select a component to render</h2></div>;
     }
@@ -129,9 +129,9 @@ export default function Home() {
           </form>
 
           {/* Left panel component selection */}
-          <h1 className={styles.heading}>Select a Component (Left)</h1>
+          <h1 className={styles.heading}></h1>
           <div className={styles.radioContainer}>
-            {['Render Map Component', 'Render Component 2', 'Render Component 3', 'Render Component 4', 'Render Component 5'].map((label, index) => (
+            {['CO2', 'Micasa', 'Odiac', 'Wetlands'].map((label, index) => (
               <label key={index} className={styles.radioLabel}>
                 <input
                   type="radio"
@@ -164,9 +164,9 @@ export default function Home() {
           </form>
 
           {/* Right panel component selection */}
-          <h1 className={styles.heading}>Select a Component (Right)</h1>
+          <h1 className={styles.heading}></h1>
           <div className={styles.radioContainer}>
-            {['Render Map Component', 'Render Component 2', 'Render Component 3', 'Render Component 4', 'Render Component 5'].map((label, index) => (
+            {['CO2', 'Micasa', 'Odiac', 'Wetlands'].map((label, index) => (
               <label key={index} className={styles.radioLabel}>
                 <input
                   type="radio"

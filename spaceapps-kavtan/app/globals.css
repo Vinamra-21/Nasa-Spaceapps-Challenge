@@ -31,3 +31,18 @@ body {
   text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
   color: #ff4081;
 }
+.earth-container {
+  position: relative;
+  overflow: hidden; /* Prevent overflow of the canvas */
+  height: 300px; /* Initial height of the Earth model */
+  margin-bottom: -150px; /* Half-hidden effect */
+  transition: transform 0.5s ease; /* Smooth transition for size change */
+}
+
+/* Responsive adjustments */
+@media (min-width: 640px) {
+  .earth-container {
+    height: 400px; /* Adjust height for larger screens */
+    margin-bottom: -200px; /* Half-hidden effect for larger screens */
+  }
+}

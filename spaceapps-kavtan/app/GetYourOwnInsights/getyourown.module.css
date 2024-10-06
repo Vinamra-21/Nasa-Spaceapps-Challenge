@@ -56,7 +56,7 @@
   flex-direction: column;
   justify-content: flex-start;
   padding: 20px;
-  background-color: #fff;
+  background-color: #111;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -68,14 +68,14 @@
   flex-direction: column;
   justify-content: flex-start;
   padding: 20px;
-  background-color: #fff;
+  background-color: #111;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .heading {
   font-size: 1.5rem;
-  color: #333;
+  color: #fff;
   margin-bottom: 20px;
   text-align: center;
 }
@@ -90,7 +90,7 @@
   display: flex;
   align-items: center;
   font-size: 1rem;
-  color: #555;
+  color: #fff;
   cursor: pointer;
   position: relative;
   padding-left: 35px;
@@ -108,7 +108,7 @@
   top: 0;
   height: 25px;
   width: 25px;
-  background-color: #eee;
+  background-color: #666;
   border-radius: 50%;
   transition: background-color 0.3s;
 }
@@ -131,12 +131,12 @@
 }
 
 .radioLabel:hover .customRadio {
-  background-color: #ddd;
+  background-color: #444;
 }
 
 .componentContainer {
   flex: 1; /* Allow component container to expand */
-  background-color: #fff;
+  background-color: #111;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -183,4 +183,15 @@
 .resultImage {
   max-width: 100%;
   height: auto;
+}
+/* Custom styles for Earth model animation */
+.earth-container {
+  position: relative;
+  overflow: hidden; /* Prevent overflow of the canvas */
+  height: 300px; /* Adjust height as needed */
+  transition: transform 0.5s ease; /* Smooth transition for size change */
+}
+
+.earth-container:hover {
+  transform: scale(0.8); /* Scale down when hovered */
 }

@@ -46,7 +46,7 @@ def get_item_count(collection_id):
     return count
 
 @app.route('/co2', methods=['GET'])
-def generate_map():
+def generate_CO2():
     # Fetch the number of items
     number_of_items = get_item_count(collection_name)
     items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}").json()["features"]
@@ -102,9 +102,239 @@ def generate_map():
         return jsonify({"error": f"No data available for the year {input_year}."}), 404
 
 
+##############################################################################################
+import branca
+@app.route('/micasa', methods=['GET'])
+def generate_micasa():
+    STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
+    RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
+    collection_name = "micasa-carbonflux-daygrid-v1"
+    asset_name = "rh"
 
-########################################################################################################
+    # Fetch the number of items dynamically based on the collection
+    number_of_items = get_item_count(collection_name)
 
+    # Fetch all items (granules) from the collection
+    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}").json()["features"]
+    items = {item["properties"]["datetime"][:10]: item for item in items}
+
+    # Set rescale values from the first item in the dataset
+    rescale_values = {
+        "max": items[list(items.keys())[0]]["assets"][asset_name]["raster:bands"][0]["histogram"]["max"],
+        "min": items[list(items.keys())[0]]["assets"][asset_name]["raster:bands"][0]["histogram"]["min"]
+    }
+
+    # Fetch the input year from query params, default to '2023' if not provided
+    input_year = request.args.get('year', '2023')  # Fetch the year from query params
+    date1 = f"{input_year}-01-01"  # Fetch data for January 1st of the input year
+
+    print(f"Year requested: {input_year}")
+
+    # Fetch the tile data for the selected year
+    if date1 in items:
+        date1_tile = requests.get(
+            f"{RASTER_API_URL}/collections/{items[date1]['collection']}/items/{items[date1]['id']}/tilejson.json?"
+            f"&assets={asset_name}"
+            f"&color_formula=gamma+r+1.05&colormap_name=purd"
+            f"&rescale={rescale_values['min']},{rescale_values['max']}"
+        ).json()
+
+        # Set initial zoom and center of map
+        map_ = folium.Map(location=(31.9, -99.9), zoom_start=6)
+
+        # Define map layer with Rh level for the tile fetched for the selected year
+        map_layer = folium.TileLayer(
+            tiles=date1_tile["tiles"][0],
+            attr="GHG",
+            opacity=0.8,
+            name=f"{date1} Rh Level",
+            overlay=True,
+            legendEnabled=True
+        )
+
+        # Add the layer to the map
+        map_layer.add_to(map_)
+
+        # Add layer control to switch between layers
+        folium.LayerControl(collapsed=False).add_to(map_)
+
+        # Add colormap legend
+        colormap = branca.colormap.linear.PuRd_09.scale(0, 0.3)
+        colormap = colormap.to_step(index=[0, 0.07, 0.15, 0.22, 0.3])
+        colormap.caption = 'Rh Values (gm Carbon/m2/daily)'
+        colormap.add_to(map_)
+
+        # Save the map as an HTML file
+        map_file_path = fr"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/micasa_{input_year}.html"
+        map_.save(map_file_path)
+
+        print(f"Map for {input_year} has been saved as 'micasa_{input_year}.html'.")
+        return send_file(map_file_path)
+    else:
+        print(f"No data available for the year {input_year}.")
+        return jsonify({"error": f"No data available for the year {input_year}."}), 404
+
+#####################################################################################################
+import datetime
+@app.route('/wetlands',methods=['GET'])
+def generate_wetlands():
+        
+    # STAC and RASTER API endpoints
+    STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
+    RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
+
+    # Collection and asset details
+    collection_name = "lpjeosim-wetlandch4-daygrid-v2"
+    asset_name = "ensemble-mean-ch4-wetlands-emissions"
+
+    # Fetch the collection from the STAC API
+    collection = requests.get(f"{STAC_API_URL}/collections/{collection_name}").json()
+
+    # Fetch the collection items (granules)
+    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit=800").json()["features"]
+
+    # Convert items to a dictionary where the key is the date
+    items = {item["properties"]["datetime"][:10]: item for item in items}
+
+    # Function to visualize data for a given date
+    def visualize_map(date_str):
+        try:
+            # Convert the input date string to the correct format (yyyy-mm-dd)
+            date_obj = datetime.strptime(date_str, "%d/%m/%Y")
+            formatted_date = date_obj.strftime("%Y-%m-%d")
+
+            # Check if the date exists in the collection
+            if formatted_date not in items:
+                print(f"No data available for {formatted_date}")
+                return
+
+            # Fetch tile data for the specified date
+            tile_data = requests.get(
+                f"{RASTER_API_URL}/collections/{items[formatted_date]['collection']}/items/{items[formatted_date]['id']}/tilejson.json?"
+                f"&assets={asset_name}"
+                f"&color_formula=gamma+r+1.05&colormap_name=magma"
+                f"&rescale=0.0,0.0003"
+            ).json()
+
+            # Create a map centered at the specified location (California coast)
+            map_ = folium.Map(location=(34, -118), zoom_start=6)
+
+            # Define a map layer for the tile fetched
+            map_layer = folium.TileLayer(
+                tiles=tile_data["tiles"][0],  # Path to retrieve the tile
+                attr="GHG",  # Set the attribution
+                opacity=0.5,  # Adjust transparency
+            )
+
+            # Add the layer to the map
+            map_layer.add_to(map_)
+
+            # Display the map
+            return map_
+
+        except Exception as e:
+            print(f"Error: {str(e)}")
+
+    # Example: Get user input for the date
+    input_date = "01/01/2023" #input("Enter the date (dd/mm/yyyy): ")
+    map_ = visualize_map(input_date)
+
+    # Show the map if it's successfully created
+    if map_:
+        map_file_path = rf"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/wetlands_{input_date}.html"
+        map_.save(map_file_path)
+        print("Map created successfully! Check the file 'wetland.html'.")
+        return send_file(map_file_path)
+# #####################################################################################################################
+import requests
+import folium
+import branca
+from flask import request, send_file
+
+@app.route('/odiac', methods=['GET'])
+def generate_odiac():
+    # STAC and RASTER API endpoints
+    STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
+    RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
+    collection_name = "odiac-ffco2-monthgrid-v2023"
+    asset_name = "co2-emissions"
+
+    # Function to fetch items from the STAC API
+    def get_item_count(collection_id):
+        count = 0
+        items_url = f"{STAC_API_URL}/collections/{collection_id}/items"
+        while True:
+            response = requests.get(items_url)
+            if not response.ok:
+                print("Error getting items")
+                exit()
+            stac = response.json()
+            count += int(stac["context"].get("returned", 0))
+            next_links = [link for link in stac["links"] if link["rel"] == "next"]
+            if not next_links:
+                break
+            items_url = next_links[0]["href"]
+        return count
+
+    # Fetch all items (granules) from the collection
+    number_of_items = get_item_count(collection_name)
+    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}").json()["features"]
+    items = {item["properties"]["start_datetime"][:7]: item for item in items}
+
+    # Get the year from query parameters (e.g., '2020' for '2020-01')
+    year_input = request.args.get('date', '2020')  # Default to 2020 if not provided
+    date_key = f"{year_input}-01"  # Fetch data for January of the input year
+
+    # Check if data is available for the selected year
+    if date_key in items:
+        asset_info = items[date_key]["assets"][asset_name]
+        rescale_values = {
+            "max": asset_info["raster:bands"][0]["histogram"]["max"],
+            "min": asset_info["raster:bands"][0]["histogram"]["min"]
+        }
+
+        # Fetch the tile data for the selected year
+        date_tile = requests.get(
+            f"{RASTER_API_URL}/collections/{items[date_key]['collection']}/items/{items[date_key]['id']}/tilejson.json?"
+            f"&assets={asset_name}"
+            f"&color_formula=gamma+r+1.05&colormap_name=rainbow"
+            f"&rescale={rescale_values['min']},{rescale_values['max']}"
+        ).json()
+
+        # Set initial zoom and center of the map
+        map_ = folium.Map(location=(34, -118), zoom_start=6)
+
+        # Define map layer with CO2 emissions for the tile fetched for the selected year
+        map_layer = folium.TileLayer(
+            tiles=date_tile["tiles"][0],
+            attr="GHG",
+            opacity=0.8,
+            name=f"{date_key} CO2 Emissions",
+            overlay=True,
+            legend_enabled=True
+        )
+
+        # Add the layer to the map
+        map_layer.add_to(map_)
+
+        # Add layer control to switch between layers
+        folium.LayerControl(collapsed=False).add_to(map_)
+
+        # Add colormap legend
+        colormap = branca.colormap.linear.RdYlGn_09.scale(rescale_values['min'], rescale_values['max'])
+        colormap.caption = 'CO2 Emissions (g/m²/day)'
+        colormap.add_to(map_)
+
+        # Save the map to a file
+        map_file_path = r"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/odiac.html"
+        map_.save(map_file_path)
+        print("Map created successfully! Check the file 'odiac.html'.")
+        return send_file(map_file_path)
+
+    else:
+        return f"No data available for the year {year_input}.", 404
+
+##################################################################################################################
 @app.route('/search', methods=['POST'])
 def search_place():
     data = request.json
