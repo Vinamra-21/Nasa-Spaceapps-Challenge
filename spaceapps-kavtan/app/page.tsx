@@ -20,7 +20,7 @@ function EarthModel({ scale }) {
     <primitive
       ref={earthRef}
       object={scene}
-      scale={scale * 0.5} // Reduce the scale to make the Earth appear smaller
+      scale={scale * 0.5}
       position={[0, 0, 0]}
     />
   );
@@ -30,8 +30,8 @@ function CameraAdjuster() {
   const { camera } = useThree();
 
   useEffect(() => {
-    camera.position.set(0, 0, -300); // Move the camera further back
-    camera.fov = 30; // Reduce the field of view to zoom out
+    camera.position.set(0, 0, -400);
+    camera.fov = 30;
     camera.updateProjectionMatrix();
   }, [camera]);
 
@@ -66,7 +66,7 @@ export default function Home() {
         </header>
 
         <main className="relative flex flex-col items-center justify-center w-full">
-          <div className="earth-container w-full h-[60vh] sm:h-[80vh]"> {/* Increased height for better visibility */}
+          <div className="earth-container w-full h-[60vh] sm:h-[80vh]">
             <Canvas>
               <Suspense fallback={null}>
                 <CameraAdjuster />
@@ -75,9 +75,9 @@ export default function Home() {
                 <OrbitControls enableZoom={true} />
                 <EarthModel scale={scale} />
                 <Stars
-                  radius={200} // Increased radius to match the zoomed out view
+                  radius={200}
                   depth={100}
-                  count={8000} // Increased star count for a more immersive experience
+                  count={8000}
                   factor={7}
                   saturation={0}
                   fade={true}
@@ -87,7 +87,19 @@ export default function Home() {
             </Canvas>
           </div>
 
-          {/* Rest of the component remains unchanged */}
+          <div className="flex flex-col sm:flex-row gap-8 items-center justify-center mt-8">
+            <Link href="/OurInsights">
+              <button className="text-white font-bold py-4 px-8 rounded-lg text-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg transition-transform transform hover:scale-105">
+                Our Insights
+              </button>
+            </Link>
+
+            <Link href="/GetYourOwnInsights">
+              <button className="text-white font-bold py-4 px-8 rounded-lg text-xl bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 shadow-lg transition-transform transform hover:scale-105">
+                Your Insights
+              </button>
+            </Link>
+          </div>
         </main>
 
         <footer className="flex gap-6 flex-wrap items-center justify-center text-md mt-8 p-4">

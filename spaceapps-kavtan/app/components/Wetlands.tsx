@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-
 const Wetlands = () => {
   const [htmlUrl, setHtmlUrl] = useState<string | null>(null); // To store the full URL to the HTML file
   const [loading, setLoading] = useState<boolean>(false); // Loading state

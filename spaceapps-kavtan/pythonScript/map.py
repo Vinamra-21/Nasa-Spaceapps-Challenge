@@ -198,6 +198,80 @@ def generate_odiac():
         return jsonify({"error": f"No data available for the year {year_input}."}), 404
 
 ##################################################################################################################
+@app.route('/wetlands', methods=['GET'])
+def generate_wetlands():
+    # STAC and RASTER API endpoints
+    STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
+    RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
+
+    # Collection and asset details
+    collection_name = "lpjeosim-wetlandch4-daygrid-v2"
+    asset_name = "ensemble-mean-ch4-wetlands-emissions"
+
+    # Fetch the collection from the STAC API
+    collection = requests.get(f"{STAC_API_URL}/collections/{collection_name}").json()
+
+    # Fetch the collection items (granules)
+    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit=800").json()["features"]
+
+    # Convert items to a dictionary where the key is the date
+    items = {item["properties"]["datetime"][:10]: item for item in items}
+
+    # Function to visualize data for a given date
+    def visualize_map(date_str):
+        try:
+            # Convert the input date string to the correct format (yyyy-mm-dd)
+            date_obj = datetime.strptime(date_str, "%Y")
+            formatted_date = date_obj.strftime("%Y-%m-%d")
+
+            # Check if the date exists in the collection
+            if formatted_date not in items:
+                print(f"No data available for {formatted_date}")
+                return None
+
+            # Fetch tile data for the specified date
+            tile_data = requests.get(
+                f"{RASTER_API_URL}/collections/{items[formatted_date]['collection']}/items/{items[formatted_date]['id']}/tilejson.json?"
+                f"&assets={asset_name}"
+                f"&color_formula=gamma+r+1.05&colormap_name=magma"
+                f"&rescale=0.0,0.0003"
+            ).json()
+
+            # Create a map centered at the specified location (California coast)
+            map_ = folium.Map(location=(34, -118), zoom_start=6)
+
+            # Define a map layer for the tile fetched
+            map_layer = folium.TileLayer(
+                tiles=tile_data["tiles"][0],  # Path to retrieve the tile
+                attr="GHG",  # Set the attribution
+                opacity=0.5,  # Adjust transparency
+            )
+
+            # Add the layer to the map
+            map_layer.add_to(map_)
+
+            # Return the map
+            return map_
+
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return None
+
+    # Get the date from the query parameters
+    input_year = request.args.get('date', '2024')
+
+    # Visualize the map for the input year
+    map_ = visualize_map(input_year)
+
+    # Show the map if it's successfully created
+    if map_:
+        map_file_path = f"./wetlands_{input_year}.html"
+        map_.save(map_file_path)
+        return send_file(map_file_path)
+    else:
+        return "No map available for this date.", 404
+
+###################################################################################
 @app.route('/search', methods=['POST'])
 def search_place():
     data = request.json
