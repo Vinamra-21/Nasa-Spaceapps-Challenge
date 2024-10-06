@@ -1,23 +1,43 @@
 "use client";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls, useGLTF, Stars } from "@react-three/drei";
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
+import "./globals.css"
 
 // Earth model component
-function EarthModel() {
-  const { scene } = useGLTF("/glb/earth_model.glb"); // Update the path to your GLB model
-  return <primitive object={scene} scale={1.5} />; // Set initial scale
+function EarthModel({ scale }) {
+  const earthRef = useRef();
+  const { scene } = useGLTF("/glb/earth_model.glb");
+  
+  useFrame((state, delta) => {
+    if (earthRef.current) {
+      earthRef.current.rotation.y += delta * 0.1; // Slow rotation
+    }
+  });
+
+  return <primitive ref={earthRef} object={scene} scale={scale} position={[0, 0, 0]} />;
+}
+
+function CameraAdjuster() {
+  const { camera } = useThree();
+  
+  useEffect(() => {
+    camera.position.z = 35;
+    camera.fov = 30; // Adjusted field of view
+    camera.updateProjectionMatrix();
+  }, [camera]);
+
+  return null;
 }
 
 export default function Home() {
-  const [scale, setScale] = useState(1.5); // Initial scale for the Earth model
+  const [scale, setScale] = useState(.5); 
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      // Scale down the Earth model as you scroll down
-      setScale(Math.max(0.5, 1.5 - scrollY / 200)); // Adjust values for the effect
+      setScale(Math.max(0.5, 1 - scrollY / 1000)); // Adjusted scaling factor
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -38,18 +58,19 @@ export default function Home() {
         </h1>
       </header>
 
-      <main className="relative flex flex-col items-center justify-center">
-        {/* Responsive Canvas with Earth Model */}
-        <div className="earth-container relative w-full" style={{ height: '300px' }}>
-          <Canvas className="absolute bottom-0 left-0 right-0">
+      <main className="relative flex flex-col items-center justify-center w-full">
+        <div className="earth-container w-full h-[50vh] sm:h-[70vh]">
+          <Canvas>
             <Suspense fallback={null}>
+              <CameraAdjuster />
+              <ambientLight intensity={1} />
+              <pointLight position={[10, 10, 10]} intensity={1} />
               <OrbitControls enableZoom={true} />
-              <EarthModel scale={scale} /> {/* Use scale state */}
+              <EarthModel scale={scale} />
             </Suspense>
           </Canvas>
         </div>
 
-        {/* Buttons Section */}
         <div className="flex flex-col sm:flex-row gap-8 items-center justify-center mt-8">
           <Link href="/OurInsights">
             <button className="text-white font-bold py-4 px-8 rounded-lg text-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg transition-transform transform hover:scale-105">
