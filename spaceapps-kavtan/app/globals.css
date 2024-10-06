@@ -34,25 +34,16 @@ body {
 
 .earth-container {
   position: relative;
-  width: 80%;
-  height: 50vh;
-
+  width: 100%;
+  height: 50vh; /* Default height for smaller screens */
 }
-.earth-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-
 
 @media (min-width: 640px) {
   .earth-container {
-    height: 70vh;
+    height: 70vh; /* Increased height for larger screens */
   }
 }
 
-
-/* ... (other styles) ... */
 /* Starry background covering the entire site */
 .starry-background {
   position: fixed;
@@ -63,6 +54,7 @@ body {
   background: black;
   overflow: hidden;
   z-index: -1; /* Ensure it's behind everything */
+  opacity: 0.5;
 }
 
 .star {
@@ -86,22 +78,41 @@ body {
   }
 }
 
-/* Styles for Earth container */
-.earth-container {
-  position: relative;
-  width: 100%;
-  height: 50vh;
+/* Styles for buttons */
+button {
+  transition: background-color 0.3s, transform 0.2s;
 }
 
-@media (min-width: 640px) {
-  .earth-container {
-    height: 70vh;
-  }
+/* Button hover effects */
+button:hover {
+  transform: scale(1.05);
 }
 
-/* Other global styles */
-body {
-  color: white;
-  background: black;
-  font-family: Arial, Helvetica, sans-serif;
+/* Styles for the footer */
+footer {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+/* Logo size in footer */
+footer img {
+  height: 2.5rem; /* Logo height in footer */
+  width: auto;
+}
+
+/* Adjusting the header for proper spacing */
+header {
+  margin-bottom: 2rem; /* Space between the header and the Earth model */
+  text-align: center;
+}
+
+/* Earth model styling */
+.earth-model {
+  width: 100%; /* Ensures Earth model fits within the container */
+  height: auto; /* Maintains aspect ratio */
 }

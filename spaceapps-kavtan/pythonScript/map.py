@@ -143,6 +143,61 @@ def generate_micasa():
         return jsonify({"error": f"No data available for the year {year_input}."}), 404  # Return JSON error
 
 ##################################################################################################################
+@app.route('/odiac', methods=['GET'])
+def generate_odiac():
+    STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
+    RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
+    collection_name = "odiac-ffco2-monthgrid-v2023"
+    asset_name = "co2-emissions"
+
+    number_of_items = get_item_count(collection_name)
+    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}").json()["features"]
+    items = {item["properties"]["start_datetime"][:7]: item for item in items}
+
+    year_input = request.args.get('year', '2012')
+    date_key = f"{year_input}-01"
+
+    if date_key in items:
+        asset_info = items[date_key]["assets"][asset_name]
+        rescale_values = {
+            "max": asset_info["raster:bands"][0]["histogram"]["max"],
+            "min": asset_info["raster:bands"][0]["histogram"]["min"]
+        }
+
+        date_tile = requests.get(
+            f"{RASTER_API_URL}/collections/{items[date_key]['collection']}/items/{items[date_key]['id']}/tilejson.json?"
+            f"&assets={asset_name}"
+            f"&color_formula=gamma+r+1.05&colormap_name=rainbow"
+            f"&rescale={rescale_values['min']},{rescale_values['max']}"
+        ).json()
+
+        map_ = folium.Map(location=(34, -118), zoom_start=6)
+
+        map_layer = folium.TileLayer(
+            tiles=date_tile["tiles"][0],
+            attr="GHG",
+            opacity=0.8,
+            name=f"{date_key} CO2 Emissions",
+            overlay=True,
+            legend_enabled=True
+        )
+
+        map_layer.add_to(map_)
+        folium.LayerControl(collapsed=False).add_to(map_)
+
+        colormap = branca.colormap.linear.RdYlGn_09.scale(rescale_values['min'], rescale_values['max'])
+        colormap.caption = 'CO2 Emissions (g/m²/day)'
+        colormap.add_to(map_)
+        
+        map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/odiac_{date_key}.html"
+        map_.save(map_file_path)
+        
+        return send_file(map_file_path)
+    else:
+        print(f"No data available for the year {year_input}.")
+        return jsonify({"error": f"No data available for the year {year_input}."}), 404
+
+##################################################################################################################
 @app.route('/search', methods=['POST'])
 def search_place():
     data = request.json
