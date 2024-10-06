@@ -103,41 +103,67 @@ def generate_CO2():
 
 
 ##############################################################################################
-import branca
+STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
+RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
+collection_name = "micasa-carbonflux-daygrid-v1"
+asset_name = "rh"
+# Function to fetch the number of items dynamically
+def get_item_count1(collection_name):
+    try:
+        response = requests.get(f"{STAC_API_URL}/collections/{collection_name}")
+        response.raise_for_status()
+        return response.json()["extent"]["spatial"]["bbox"][0]  # Example: Replace with the actual logic to fetch the count
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching item count: {e}")
+        return 0
+
 @app.route('/micasa', methods=['GET'])
 def generate_micasa():
-    STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
-    RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
-    collection_name = "micasa-carbonflux-daygrid-v1"
-    asset_name = "rh"
+
 
     # Fetch the number of items dynamically based on the collection
-    number_of_items = get_item_count(collection_name)
+    number_of_items = get_item_count1(collection_name)
+    if number_of_items == 0:
+        return jsonify({"error": "Unable to fetch item count from collection."}), 500
 
     # Fetch all items (granules) from the collection
-    items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}").json()["features"]
-    items = {item["properties"]["datetime"][:10]: item for item in items}
+    try:
+        response = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit={number_of_items}")
+        response.raise_for_status()
+        items = response.json()["features"]
+        items = {item["properties"]["datetime"][:10]: item for item in items}
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching items: {e}")
+        return jsonify({"error": "Unable to fetch items from collection."}), 500
 
     # Set rescale values from the first item in the dataset
+    first_item = next(iter(items.values()), None)
+    if not first_item:
+        return jsonify({"error": "No items found in the collection."}), 404
+
     rescale_values = {
-        "max": items[list(items.keys())[0]]["assets"][asset_name]["raster:bands"][0]["histogram"]["max"],
-        "min": items[list(items.keys())[0]]["assets"][asset_name]["raster:bands"][0]["histogram"]["min"]
+        "max": first_item["assets"][asset_name]["raster:bands"][0]["histogram"]["max"],
+        "min": first_item["assets"][asset_name]["raster:bands"][0]["histogram"]["min"]
     }
 
     # Fetch the input year from query params, default to '2023' if not provided
-    input_year = request.args.get('year', '2023')  # Fetch the year from query params
+    input_year = request.args.get('year', '2023')
     date1 = f"{input_year}-01-01"  # Fetch data for January 1st of the input year
 
     print(f"Year requested: {input_year}")
 
     # Fetch the tile data for the selected year
     if date1 in items:
-        date1_tile = requests.get(
-            f"{RASTER_API_URL}/collections/{items[date1]['collection']}/items/{items[date1]['id']}/tilejson.json?"
-            f"&assets={asset_name}"
-            f"&color_formula=gamma+r+1.05&colormap_name=purd"
-            f"&rescale={rescale_values['min']},{rescale_values['max']}"
-        ).json()
+        try:
+            date1_tile = requests.get(
+                f"{RASTER_API_URL}/collections/{items[date1]['collection']}/items/{items[date1]['id']}/tilejson.json?"
+                f"&assets={asset_name}"
+                f"&color_formula=gamma+r+1.05&colormap_name=purd"
+                f"&rescale={rescale_values['min']},{rescale_values['max']}"
+            ).json()
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching tile data: {e}")
+            return jsonify({"error": f"Unable to fetch tile data for the year {input_year}."}), 500
 
         # Set initial zoom and center of map
         map_ = folium.Map(location=(31.9, -99.9), zoom_start=6)
@@ -149,7 +175,7 @@ def generate_micasa():
             opacity=0.8,
             name=f"{date1} Rh Level",
             overlay=True,
-            legendEnabled=True
+            legend_name='Rh Levels',
         )
 
         # Add the layer to the map
@@ -165,7 +191,7 @@ def generate_micasa():
         colormap.add_to(map_)
 
         # Save the map as an HTML file
-        map_file_path = fr"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/micasa_{input_year}.html"
+        map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/micasa_{input_year}.html"
         map_.save(map_file_path)
 
         print(f"Map for {input_year} has been saved as 'micasa_{input_year}.html'.")
@@ -175,7 +201,7 @@ def generate_micasa():
         return jsonify({"error": f"No data available for the year {input_year}."}), 404
 
 #####################################################################################################
-import datetime
+from datetime import datetime
 @app.route('/wetlands',methods=['GET'])
 def generate_wetlands():
         
