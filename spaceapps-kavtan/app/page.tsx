@@ -88,7 +88,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-8 items-center justify-center mt-8">
-            <Link href="/OurInsights">
+            <Link href="/carbonemission">
               <button className="text-white font-bold py-4 px-8 rounded-lg text-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg transition-transform transform hover:scale-105">
                 Our Insights
               </button>

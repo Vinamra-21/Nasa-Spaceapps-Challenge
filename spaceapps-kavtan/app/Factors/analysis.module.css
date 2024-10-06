@@ -1,0 +1,44 @@
+.container {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .heading {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .section {
+    margin-bottom: 40px;
+  }
+  
+  .subheading {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    color: #fff;
+  }
+  
+  .observation {
+    font-size: 1.2rem;
+    margin-top: 15px;
+    color: #efeded;
+  }
+  
+  .paragraph {
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+  
+  .list {
+    margin-left: 20px;
+    list-style-type: disc;
+  }
+  
+  .image {
+    display: block;
+    margin: 20px auto;
+    border-radius: 8px;
+  }
+  

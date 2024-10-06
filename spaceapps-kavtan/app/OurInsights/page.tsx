@@ -112,10 +112,8 @@
 //     </div>
 //   );
 // }
-
-
 "use client"; // Add this line to declare the component as a client component
-
+import styles from "./ourInsights.module.css";
 import { useState, ChangeEvent, FormEvent } from "react";
 
 export default function Home() {
@@ -143,7 +141,7 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/predict", {
+      const response = await fetch("http://localhost:5001/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,15 +159,16 @@ export default function Home() {
   };
 
   return (
-    <div>
-      <h1>Carbon Emissions Predictor</h1>
-      <form onSubmit={handleSubmit}>
+    <div className={styles.container}>
+      <h1 className={styles.h1}>Carbon Emissions Predictor</h1>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="number"
           name="cropLand"
           placeholder="Crop Land Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -177,6 +176,7 @@ export default function Home() {
           placeholder="Grazing Land Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -184,6 +184,7 @@ export default function Home() {
           placeholder="Forest Land Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -191,6 +192,7 @@ export default function Home() {
           placeholder="Fishing Ground Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -198,6 +200,7 @@ export default function Home() {
           placeholder="Built-up Land Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -205,18 +208,30 @@ export default function Home() {
           placeholder="Population"
           onChange={handleChange}
           required
+          className={styles.input}
         />
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className={styles.button}
+        >
           {loading ? "Loading..." : "Predict Emissions"}
         </button>
       </form>
 
       {result && (
-        <div>
-          <h2>Sensitivity Analysis Results:</h2>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
+        <div className={styles.result}>
+          <h2 className={styles.h2}>Sensitivity Analysis Results:</h2>
+          <pre className={styles.pre}>
+            {Object.entries(result).map(([key, val]) => (
+              <div key={key}>
+                <strong>{key}:</strong> {val}
+              </div>
+            ))}
+          </pre>
         </div>
       )}
+
     </div>
   );
 }

@@ -191,7 +191,7 @@ export default function Home() {
             </button>
             {leftSearchResult ? (
               <Image
-                src={leftSearchResult}
+                src="/mapnew.png"
                 width={500}
                 height={500}
                 alt="Left Search Result"

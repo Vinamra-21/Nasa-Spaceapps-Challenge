@@ -198,8 +198,9 @@ def generate_odiac():
         return jsonify({"error": f"No data available for the year {year_input}."}), 404
 
 ##################################################################################################################
-@app.route('/wetlands', methods=['GET'])
+@app.route('/wetlands',methods=['GET'])
 def generate_wetlands():
+        
     # STAC and RASTER API endpoints
     STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
     RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
@@ -221,13 +222,13 @@ def generate_wetlands():
     def visualize_map(date_str):
         try:
             # Convert the input date string to the correct format (yyyy-mm-dd)
-            date_obj = datetime.strptime(date_str, "%Y")
+            date_obj = datetime.strptime(date_str, "%d/%m/%Y")
             formatted_date = date_obj.strftime("%Y-%m-%d")
 
             # Check if the date exists in the collection
             if formatted_date not in items:
                 print(f"No data available for {formatted_date}")
-                return None
+                return
 
             # Fetch tile data for the specified date
             tile_data = requests.get(
@@ -250,27 +251,22 @@ def generate_wetlands():
             # Add the layer to the map
             map_layer.add_to(map_)
 
-            # Return the map
+            # Display the map
             return map_
 
         except Exception as e:
             print(f"Error: {str(e)}")
-            return None
 
-    # Get the date from the query parameters
-    input_year = request.args.get('date', '2024')
-
-    # Visualize the map for the input year
-    map_ = visualize_map(input_year)
+    # Example: Get user input for the date
+    input_date = '01/01/2024'#input("Enter the date (dd/mm/yyyy): ")
+    map_ = visualize_map(input_date)
 
     # Show the map if it's successfully created
     if map_:
-        map_file_path = f"./wetlands_{input_year}.html"
+        map_file_path =  map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/wetlands_{input_date}.html"
         map_.save(map_file_path)
+        print("Map created successfully! Check the file 'wetland.html'.")
         return send_file(map_file_path)
-    else:
-        return "No map available for this date.", 404
-
 ###################################################################################
 @app.route('/search', methods=['POST'])
 def search_place():
