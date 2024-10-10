@@ -5,10 +5,10 @@ import google.generativeai as genai
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Allow requests from the frontend
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 def load_model_and_theta():
-    model = joblib.load('E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/App2/model1.joblib')
+    model = joblib.load('./model1.joblib')
     
     theta = {
         "cropLand": {"mean": 20198508.13312177, "std": 50714883.562947996},
@@ -71,7 +71,7 @@ def print_sensitivity_results(base_emissions, results):
     return superstr
 
 def generate_output(data):
-    genai.configure(api_key=API_KEY)
+    genai.configure(api_key=process.env.API_KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
     input_text = (
         "You are a model that analyses the impact of land use and population on carbon emissions. "
@@ -108,4 +108,4 @@ def predict():
     return jsonify({"sensitivity_analysis": output, "generated_explanation": generated_output})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)  # Run on port 5001
+    app.run(debug=True, port=5001)  

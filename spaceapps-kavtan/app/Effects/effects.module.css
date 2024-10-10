@@ -1,0 +1,43 @@
+.container {
+  margin: auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  color: #fff;
+}
+
+.title {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #fff;
+}
+
+.subtitle {
+  font-size: 2em;
+  margin-top: 30px;
+  color: #fff;
+}
+
+.paragraph {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.subsection {
+  font-size: 1.5em;
+  margin-top: 20px;
+  color: #2980b9;
+}
+
+.list {
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 0.9em;
+  color: #7f8c8d;
+}

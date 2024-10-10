@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import styles from "./analysis.module.css"; // Assuming you're using a CSS module for styling
-
+import styles from "./factors.module.css"; 
 export default function AnalysisPage() {
   return (
     <div className={styles.container}>

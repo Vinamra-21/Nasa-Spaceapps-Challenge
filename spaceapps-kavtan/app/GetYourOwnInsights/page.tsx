@@ -161,14 +161,13 @@ export default function Home() {
             <button type="submit" className={styles.searchButton}>Search</button>
           </form>
 
-          {/* Right panel component selection */}
           <div className={styles.radioContainer}>
             {['CO2', 'Micasa', 'Odiac', 'Wetlands'].map((label, index) => (
               <label key={index} className={styles.radioLabel}>
                 <input
                   type="radio"
-                  checked={selectedRightComponent === index + 1} // Unique index for right panel
-                  onChange={() => setSelectedRightComponent(index + 1)} // Unique index for right panel
+                  checked={selectedRightComponent === index + 1}
+                  onChange={() => setSelectedRightComponent(index + 1)}
                   className={styles.radio}
                 />
                 <span className={styles.customRadio}></span>
@@ -177,12 +176,11 @@ export default function Home() {
             ))}
           </div>
           <div className={styles.componentContainer}>
-            {renderRightComponent()} {/* Render based on right panel selection */}
+            {renderRightComponent()} 
           </div>
         </div>
       </div>
 
-      {/* Left panel search result modal */}
       {isLeftModalOpen && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>

@@ -5,9 +5,8 @@ import google.generativeai as genai
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app) 
 
-# Load the model and theta values globally to avoid reloading on each request
 model = joblib.load('E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/App3/model2.joblib')
 
 theta = {

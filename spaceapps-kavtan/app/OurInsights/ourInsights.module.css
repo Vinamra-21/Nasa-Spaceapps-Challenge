@@ -1,82 +1,45 @@
 .container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 2rem;
-  }
-  
-  .form {
     display: flex;
     flex-direction: column;
-  }
-  
-  .input {
-    margin-bottom: 15px;
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .input:focus {
-    outline: none;
-    border-color: #0070f3;
-  }
-  
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+    gap: 2.5rem;
+    padding: 1rem;
+    background-color: #2f855a; 
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
+}
   .button {
-    padding: 12px;
-    background-color: #0070f3;
+    font-weight: bold;
+    font-size: 1.5rem; 
+    padding: 1.2rem 3rem; 
+    border-radius: 1rem; 
     color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
+    background: linear-gradient(to right, #48bb78, #38b2ac);
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); 
+    text-transform: uppercase; 
+    letter-spacing: 0.05rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
   }
   
   .button:hover {
-    background-color: #005bb5;
+    background: linear-gradient(to right, #2f855a, #2c7a7b);
+    transform: scale(1.08) rotate(-1deg); 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   }
   
-  .button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  .button:active {
+    transform: scale(1) rotate(0deg);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
   }
   
-  .result {
-    margin-top: 30px;
-    background-color: #c8baba;
-    padding: 20px;
-    border-radius: 10px;
-  }
-  
-  .pre {
-    font-family: monospace;
-    background-color: #000000;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-  }
-  
-  .h2 {
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-    color: #333;
-    text-align: center;
-  }
-  
-  .loading {
-    text-align: center;
-    color: #888;
-    font-style: italic;
+  @media (min-width: 640px) {
+    .container {
+      flex-direction: row;
+      padding: 2rem;
+      gap: 3rem;
+    }
   }
   
