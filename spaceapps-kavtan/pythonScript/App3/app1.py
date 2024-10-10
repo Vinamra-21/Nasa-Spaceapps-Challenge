@@ -7,7 +7,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app) 
 
-model = joblib.load('E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/App3/model2.joblib')
+model = joblib.load('model2.joblib')
 
 theta = {
     "cropLand": {"mean": 11611656.9279, "std": 27400727.8380},
@@ -70,7 +70,7 @@ def format_sensitivity_results(base_emissions, results):
 @app.route('/analyze', methods=['POST'])
 def analyze():
     data = request.json
-    base_data = pd.DataFrame(data)
+    base_data = pd.DataFrame({k: [v] for k, v in data.items()})
     base_data = base_data[model.feature_names_in_]
     
     base_emissions, results = sensitivity_analysis(base_data)
@@ -83,4 +83,4 @@ def analyze():
     })
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)  # Change to run on port 5002
+    app.run(debug=True, port=5002)  

@@ -3,7 +3,8 @@ import pandas as pd
 import joblib
 import google.generativeai as genai
 from flask_cors import CORS
-
+import os
+from dotenv import load_dotenv
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
@@ -71,7 +72,9 @@ def print_sensitivity_results(base_emissions, results):
     return superstr
 
 def generate_output(data):
-    genai.configure(api_key=process.env.API_KEY)
+    load_dotenv()
+    API_KEY = os.getenv("API_KEY")
+    genai.configure(api_key=API_KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
     input_text = (
         "You are a model that analyses the impact of land use and population on carbon emissions. "

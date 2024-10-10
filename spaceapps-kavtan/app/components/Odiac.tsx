@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const Co2 = () => {
+const Odiac = ({ searchTerm }: { searchTerm: string })  => {
   const [htmlUrl, setHtmlUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
@@ -30,7 +30,7 @@ const Co2 = () => {
   };
 
   useEffect(() => {
-    fetchHtmlMap(inputYear);
+    fetchHtmlMap(searchTerm);
   }, [inputYear]);
 
   return (
@@ -54,11 +54,11 @@ const Co2 = () => {
           width="100%"
           height="100%"
           style={{ border: 'none' }}
-          title="CO2 Emissions Map"
+          title="Odiac Emissions Map"
         />
       ) : null}
     </div>
   );
 };
 
-export default Co2;
+export default Odiac;

@@ -1,30 +1,29 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const Wetlands = () => {
-  const [htmlUrl, setHtmlUrl] = useState<string | null>(null); // To store the full URL to the HTML file
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error message state
-  const [inputYear, setInputYear] = useState<string>('2016'); // Default year
+const Wetlands = ({ searchTerm }: { searchTerm: string })  => {
+  const [htmlUrl, setHtmlUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [inputYear, setInputYear] = useState<string>('2016'); 
 
-  // Function to fetch the HTML map
+
   const fetchHtmlMap = async (year: string) => {
-    setLoading(true); // Start loading
-    setError(null); // Reset error state
+    setLoading(true); 
+    setError(null); 
 
     try {
-      // Validate year input
       if (!/^\d{4}$/.test(year)) {
         setError('Please enter a valid year (e.g., 2020)');
         setLoading(false);
         return;
       }
 
-      const response = await fetch(`http://127.0.0.1:5000/wetlands?date=${year}`); // Correct query param to 'date'
+      const response = await fetch(`http://127.0.0.1:5000/wetlands?date=${year}`); 
       if (response.ok) {
-        const htmlBlob = await response.blob(); // Receive the HTML file as a blob
-        const url = URL.createObjectURL(htmlBlob); // Create a URL object to use in iframe
-        setHtmlUrl(url); // Set the iframe source to the blob URL
+        const htmlBlob = await response.blob(); 
+        const url = URL.createObjectURL(htmlBlob); 
+        setHtmlUrl(url); 
       } else {
         setError('Failed to fetch the map HTML');
       }
@@ -32,13 +31,12 @@ const Wetlands = () => {
       console.error('Error fetching the map HTML:', error);
       setError('Error fetching the map HTML. Please try again.');
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
-  // Fetch map whenever the year changes
   useEffect(() => {
-    fetchHtmlMap(inputYear); // Fetch map with the current input year
+    fetchHtmlMap(searchTerm); 
   }, [inputYear]);
 
   return (
@@ -48,17 +46,17 @@ const Wetlands = () => {
         <input
           type="text"
           value={inputYear}
-          onChange={(e) => setInputYear(e.target.value)} // Update year based on input
+          onChange={(e) => setInputYear(e.target.value)}
         />
-        <button onClick={() => fetchHtmlMap(inputYear)}>Load Map</button> {/* Manually trigger map load */}
+        <button onClick={() => fetchHtmlMap(inputYear)}>Load Map</button> 
       </div>
       {loading ? (
-        <p>Loading map...</p> // Display a loading message while fetching
+        <p>Loading map...</p> 
       ) : error ? (
-        <p>{error}</p> // Display error message
+        <p>{error}</p> 
       ) : htmlUrl ? (
         <iframe
-          src={htmlUrl}  // Set the iframe src to the blob URL
+          src={htmlUrl}  
           width="100%"
           height="100%"
           style={{

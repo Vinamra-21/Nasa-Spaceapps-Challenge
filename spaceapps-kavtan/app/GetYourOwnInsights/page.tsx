@@ -1,19 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios'; // For making HTTP requests
+import axios from 'axios';
 import dynamic from 'next/dynamic';
-import styles from './getyourown.module.css'; // Import the CSS module
+import styles from './getyourown.module.css';
 import Image from 'next/image';
 
-// Dynamically import components without SSR
 const CO2 = dynamic(() => import('../components/CO2'), { ssr: true });
 const Micasa = dynamic(() => import('../components/Micasa'), { ssr: false });
 const Odiac = dynamic(() => import('../components/Odiac'), { ssr: true });
 const Wetlands = dynamic(() => import('../components/Wetlands'), { ssr: false });
 
 export default function Home() {
-  // Separate states for left and right panel search
   const [leftSearchTerm, setLeftSearchTerm] = useState<string>(''); 
   const [leftSearchResult, setLeftSearchResult] = useState<string | null>(null);
   const [isLeftModalOpen, setLeftModalOpen] = useState<boolean>(false);
@@ -22,11 +20,9 @@ export default function Home() {
   const [rightSearchResult, setRightSearchResult] = useState<string | null>(null);
   const [isRightModalOpen, setRightModalOpen] = useState<boolean>(false);
 
-  // Separate states for selected components
   const [selectedLeftComponent, setSelectedLeftComponent] = useState<number | null>(null);
   const [selectedRightComponent, setSelectedRightComponent] = useState<number | null>(null);
 
-  // Function to handle left panel search submission
   const handleLeftSearchSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (leftSearchTerm.trim() === '') {
@@ -41,7 +37,7 @@ export default function Home() {
       const { image_url, message } = response.data;
       if (image_url) {
         setLeftSearchResult(image_url);
-        setLeftModalOpen(true); // Open modal on successful search
+        setLeftModalOpen(true); 
       } else {
         setLeftSearchResult('No data found.');
       }
@@ -52,7 +48,6 @@ export default function Home() {
     }
   };
 
-  // Function to handle right panel search submission
   const handleRightSearchSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (rightSearchTerm.trim() === '') {
@@ -67,7 +62,7 @@ export default function Home() {
       const { image_url, message } = response.data;
       if (image_url) {
         setRightSearchResult(image_url);
-        setRightModalOpen(true); // Open modal on successful search
+        setRightModalOpen(true);
       } else {
         setRightSearchResult('No data found.');
       }
@@ -78,7 +73,6 @@ export default function Home() {
     }
   };
 
-  // Rendering components for left panel
   const renderLeftComponent = () => {
     switch (selectedLeftComponent) {
       case 1:
@@ -94,7 +88,6 @@ export default function Home() {
     }
   };
 
-  // Rendering components for right panel
   const renderRightComponent = () => {
     switch (selectedRightComponent) {
       case 1:
@@ -113,7 +106,6 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.panelContainer}>
-        {/* Left panel with search and component selection */}
         <div className={styles.leftPanel}>
           <h1 className={styles.heading}>Left Panel Search</h1>
           <form onSubmit={handleLeftSearchSubmit} className={styles.fullWidthForm}>
@@ -127,7 +119,6 @@ export default function Home() {
             <button type="submit" className={styles.searchButton}>Search</button>
           </form>
 
-          {/* Left panel component selection */}
           <div className={styles.radioContainer}>
             {['CO2', 'Micasa', 'Odiac', 'Wetlands'].map((label, index) => (
               <label key={index} className={styles.radioLabel}>
@@ -147,7 +138,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right panel with search and component selection */}
         <div className={styles.rightPanel}>
           <h1 className={styles.heading}>Right Panel Search</h1>
           <form onSubmit={handleRightSearchSubmit} className={styles.fullWidthForm}>
@@ -202,7 +192,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Right panel search result modal */}
       {isRightModalOpen && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>

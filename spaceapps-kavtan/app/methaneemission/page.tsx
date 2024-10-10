@@ -1,6 +1,6 @@
-"use client"; // Add this line to declare the component as a Client Component
-
+"use client"; 
 import { useState, ChangeEvent, FormEvent } from "react";
+import styles from './methane.module.css';
 
 function OurInsights() {
   const [inputs, setInputs] = useState({
@@ -19,7 +19,7 @@ function OurInsights() {
     const { name, value } = e.target;
     setInputs((prevInputs) => ({
       ...prevInputs,
-      [name]: Number(value), // Ensure the input is treated as a number
+      [name]: Number(value), 
     }));
   };
 
@@ -45,15 +45,16 @@ function OurInsights() {
   };
 
   return (
-    <div>
-      <h1>Carbon Emissions Predictor</h1>
-      <form onSubmit={handleSubmit}>
+    <div className={styles.container}>
+      <h1 className={styles.heading}>Carbon Emissions Predictor</h1>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="number"
           name="cropLand"
           placeholder="Crop Land Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -61,6 +62,7 @@ function OurInsights() {
           placeholder="Grazing Land Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -68,6 +70,7 @@ function OurInsights() {
           placeholder="Forest Land Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -75,6 +78,7 @@ function OurInsights() {
           placeholder="Fishing Ground Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -82,6 +86,7 @@ function OurInsights() {
           placeholder="Built-up Land Area"
           onChange={handleChange}
           required
+          className={styles.input}
         />
         <input
           type="number"
@@ -89,16 +94,17 @@ function OurInsights() {
           placeholder="Population"
           onChange={handleChange}
           required
+          className={styles.input}
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} className={styles.button}>
           {loading ? "Loading..." : "Predict Emissions"}
         </button>
       </form>
 
       {result && (
-        <div>
-          <h2>Sensitivity Analysis Results:</h2>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
+        <div className={styles.result}>
+          <h2 className={styles.subheading}>Sensitivity Analysis Results:</h2>
+          <pre className={styles.observation}>{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>

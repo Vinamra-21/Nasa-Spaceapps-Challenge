@@ -6,7 +6,6 @@ import warnings
 import branca
 from flask_cors import CORS
 from plotter2 import generate_co2_emission_graph
-import os  # For working with file paths
 
 warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 
@@ -69,7 +68,7 @@ def generate_CO2():
         )
         map_layer.add_to(map_)
 
-        map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/co2_{input_year}.html"
+        map_file_path = f"co2_{input_year}.html"
         map_.save(map_file_path)
         
         return send_file(map_file_path)
@@ -109,10 +108,8 @@ def generate_micasa():
             f"&rescale={rescale_values['min']},{rescale_values['max']}"
         ).json()
 
-        # Set initial zoom and center of map
         map_ = folium.Map(location=(31.9, -99.9), zoom_start=6)
 
-        # Define map layer with Rh level for the tile fetched for the selected year
         map_layer = folium.TileLayer(
             tiles=date1_tile["tiles"][0],
             attr="GHG",
@@ -134,7 +131,7 @@ def generate_micasa():
         colormap.caption = 'Rh Values (gm Carbon/m2/daily)'
         colormap.add_to(map_)
 
-        map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/micasa_{date1}.html"
+        map_file_path = f"micasa_{date1}.html"
         map_.save(map_file_path)
         
         return send_file(map_file_path)
@@ -189,7 +186,7 @@ def generate_odiac():
         colormap.caption = 'CO2 Emissions (g/m²/day)'
         colormap.add_to(map_)
         
-        map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/odiac_{date_key}.html"
+        map_file_path = f"odiac_{date_key}.html"
         map_.save(map_file_path)
         
         return send_file(map_file_path)
@@ -200,28 +197,21 @@ def generate_odiac():
 ##################################################################################################################
 @app.route('/wetlands',methods=['GET'])
 def generate_wetlands():
-        
-    # STAC and RASTER API endpoints
+
     STAC_API_URL = "https://earth.gov/ghgcenter/api/stac"
     RASTER_API_URL = "https://earth.gov/ghgcenter/api/raster"
 
-    # Collection and asset details
     collection_name = "lpjeosim-wetlandch4-daygrid-v2"
     asset_name = "ensemble-mean-ch4-wetlands-emissions"
 
-    # Fetch the collection from the STAC API
     collection = requests.get(f"{STAC_API_URL}/collections/{collection_name}").json()
 
-    # Fetch the collection items (granules)
     items = requests.get(f"{STAC_API_URL}/collections/{collection_name}/items?limit=800").json()["features"]
 
-    # Convert items to a dictionary where the key is the date
     items = {item["properties"]["datetime"][:10]: item for item in items}
 
-    # Function to visualize data for a given date
     def visualize_map(date_str):
         try:
-            # Convert the input date string to the correct format (yyyy-mm-dd)
             date_obj = datetime.strptime(date_str, "%d/%m/%Y")
             formatted_date = date_obj.strftime("%Y-%m-%d")
 
@@ -261,9 +251,8 @@ def generate_wetlands():
     input_date = '01/01/2024'#input("Enter the date (dd/mm/yyyy): ")
     map_ = visualize_map(input_date)
 
-    # Show the map if it's successfully created
     if map_:
-        map_file_path =  map_file_path = f"E:/Web Development/Projects-IIT/Nasa-Spaceapps-Challenge/spaceapps-kavtan/public/wetlands_{input_date}.html"
+        map_file_path =  map_file_path = f"wetlands_{input_date}.html"
         map_.save(map_file_path)
         print("Map created successfully! Check the file 'wetland.html'.")
         return send_file(map_file_path)

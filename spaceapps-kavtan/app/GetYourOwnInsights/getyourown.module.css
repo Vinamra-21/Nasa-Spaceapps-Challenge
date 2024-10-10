@@ -1,4 +1,3 @@
-/* General Container */
 .container {
   display: flex;
   flex-direction: column;
@@ -8,7 +7,6 @@
   font-family: 'Roboto', sans-serif;
 }
 
-/* Full-width search bar styling */
 .searchContainer {
   display: flex;
   justify-content: center;
@@ -29,7 +27,7 @@
   border-radius: 8px;
   margin-right: 10px;
   margin-bottom: 10px;
-  flex: 1; /* Make input take available space */
+  flex: 1; 
   transition: all 0.3s ease;
 }
 
@@ -56,13 +54,11 @@
   transform: scale(1.05);
 }
 
-/* Loading Indicator */
 .loadingIndicator {
   font-size: 16px;
   color: #fff;
 }
 
-/* Layout for panels */
 .panelContainer {
   display: flex;
   flex: 1;
@@ -74,7 +70,6 @@
   transform: scale(1.02);
 }
 
-/* Panel Styling */
 .leftPanel, .rightPanel {
   flex: 1;
   display: flex;
@@ -92,7 +87,6 @@
   background-color: #1a1a1a;
 }
 
-/* Headings */
 .heading {
   font-size: 1.8rem;
   color: #fff;
@@ -103,7 +97,6 @@
   font-weight: 600;
 }
 
-/* Radio Buttons and Selection */
 .radioContainer {
   display: flex;
   flex-direction: column;
@@ -164,7 +157,6 @@
   background-color: #444;
 }
 
-/* Component Container */
 .componentContainer {
   flex: 1;
   background-color: #1a1a1a;
@@ -187,7 +179,6 @@
   color: #0070f3;
 }
 
-/* Modal Styling */
 .modal {
   display: flex;
   position: fixed;
@@ -237,7 +228,6 @@
   transform: scale(1.05);
 }
 
-/* Earth Container */
 .earth-container {
   position: relative;
   overflow: hidden;
@@ -252,7 +242,6 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
-/* Keyframes for Modal Animation */
 @keyframes fadeIn {
   from {
     opacity: 0;

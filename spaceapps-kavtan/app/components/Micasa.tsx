@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const Micasa = () => {
+const Micasa = ({ searchTerm }: { searchTerm: string }) => {
   const [htmlUrl, setHtmlUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,11 +16,11 @@ const Micasa = () => {
       if (response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.indexOf("application/json") !== -1) {
-          // Handle JSON response (likely an error)
+
           const errorData = await response.json();
           setError(errorData.error || 'An unknown error occurred');
         } else {
-          // Handle HTML response
+
           const htmlBlob = await response.blob();
           const url = URL.createObjectURL(htmlBlob);
           setHtmlUrl(url);
@@ -37,9 +37,9 @@ const Micasa = () => {
     }
   };
 
-  // Fetch the map when the inputYear changes
+
   useEffect(() => {
-    fetchHtmlMap(inputYear);
+    fetchHtmlMap(searchTerm);
   }, [inputYear]);
 
   return (

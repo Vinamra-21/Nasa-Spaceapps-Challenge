@@ -1,23 +1,23 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const CO2 = () => {
+const CO2 = ({ searchTerm }: { searchTerm: string })  => {
   const [htmlUrl, setHtmlUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
-  const [inputYear, setInputYear] = useState<string>('2016'); // Default year
+  const [inputYear, setInputYear] = useState<string>('2016'); 
 
-  // Function to fetch the HTML map
+
   const fetchHtmlMap = async (year: string) => {
     setLoading(true);
     setError(false);
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/co2?year=${year}`); // Flask backend
+      const response = await fetch(`http://127.0.0.1:5000/co2?year=${year}`); 
       if (response.ok) {
         const htmlBlob = await response.blob();
         const url = URL.createObjectURL(htmlBlob);
-        setHtmlUrl(url); // Set the iframe source to the blob URL
+        setHtmlUrl(url);
       } else {
         setError(true);
       }
@@ -29,9 +29,9 @@ const CO2 = () => {
     }
   };
 
-  // Fetch map whenever the year changes
+
   useEffect(() => {
-    fetchHtmlMap(inputYear); // Fetch map with the current input year
+    fetchHtmlMap(searchTerm); 
   }, [inputYear]);
 
   return (
