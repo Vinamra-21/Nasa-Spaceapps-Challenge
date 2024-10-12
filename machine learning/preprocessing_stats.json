@@ -1,0 +1,33 @@
+{
+    "imputer_statistics": {
+        "year": 1997.3581805191711,
+        "Population": 24824301.3865206,
+        "cropLand": 11611656.927929007,
+        "grazingLand": 4581758.579133221,
+        "forestLand": 7115808.951552652,
+        "fishingGround": 2841642.297846045,
+        "builtupLand": 1696530.7443681124,
+        "carbon": 27416994.660249427,
+        "SolidWasteDisposal": 117.45052694580953
+    },
+    "scaler_mean": {
+        "Population": 24824301.3865206,
+        "cropLand": 11611656.927929007,
+        "grazingLand": 4581758.579133221,
+        "forestLand": 7115808.951552652,
+        "fishingGround": 2841642.297846045,
+        "builtupLand": 1696530.7443681124,
+        "carbon": 27416994.660249427,
+        "SolidWasteDisposal": 117.45052694580954
+    },
+    "scaler_scale": {
+        "Population": 86326885.99554929,
+        "cropLand": 27399096.405347362,
+        "grazingLand": 13076173.028889598,
+        "forestLand": 16628958.141984807,
+        "fishingGround": 6823425.763628455,
+        "builtupLand": 4737159.187438591,
+        "carbon": 70976736.2186491,
+        "SolidWasteDisposal": 281.5053750680042
+    }
+}

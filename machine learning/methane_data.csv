@@ -1,0 +1,2 @@
+id,datetime,geometry,properties
+gosat-based-ch4budget-yeargrid-v1-2019,,"{'type': 'Polygon', 'coordinates': [[[-180.5, -90.5], [179.5, -90.5], [179.5, 89.5], [-180.5, 89.5], [-180.5, -90.5]]]}","{'end_datetime': '2019-12-31T00:00:00+00:00', 'start_datetime': '2019-01-01T00:00:00+00:00'}"

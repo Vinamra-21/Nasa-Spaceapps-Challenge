@@ -1,0 +1,97 @@
+{
+    "model_performance": {
+        "MSE": 0.007032531537447121,
+        "R2": 0.993089260520842
+    },
+    "feature_importance": {
+        "feature": {
+            "0": "Population",
+            "1": "cropLand",
+            "2": "grazingLand",
+            "3": "forestLand",
+            "4": "fishingGround",
+            "5": "builtupLand",
+            "6": "carbon",
+            "7": "BiologicalTreatmentofSolidWaste",
+            "8": "ChemicalIndustry",
+            "9": "CivilAviation",
+            "10": "Emissionsfrombiomassburning",
+            "11": "EntericFermentation",
+            "12": "Fossilfuelfires",
+            "13": "IncinerationandOpenBurningofWaste",
+            "14": "MainActivityElectricityandHeatProduction",
+            "15": "ManufacturingIndustriesandConstruction",
+            "16": "ManureManagement",
+            "17": "MetalIndustry",
+            "18": "NonSpecified",
+            "19": "OilandNaturalGas",
+            "20": "OtherTransportation",
+            "21": "PetroleumRefiningManufactureofSolidFuelsandOtherEnergyIndustries",
+            "22": "Railways",
+            "23": "Residentialandothersectors",
+            "24": "Ricecultivations",
+            "25": "RoadTransportationnoresuspension",
+            "26": "SolidFuels",
+            "27": "WastewaterTreatmentandDischarge",
+            "28": "WaterborneNavigation"
+        },
+        "importance": {
+            "0": 0.0375495989690371,
+            "1": 0.019254671786540865,
+            "2": 0.08234930170923399,
+            "3": 0.002545065100894953,
+            "4": 0.0033816688354793927,
+            "5": 0.005142733867973454,
+            "6": 0.06993314631359572,
+            "7": 0.00439375555625511,
+            "8": 0.014955523949229806,
+            "9": 0.0077433188968410475,
+            "10": 0.007826553400350883,
+            "11": 0.01369541999616226,
+            "12": 5.8724136129102384e-05,
+            "13": 0.008698001636453677,
+            "14": 0.004995890095835371,
+            "15": 0.007694812239963528,
+            "16": 0.48218804610233384,
+            "17": 0.002406896156496752,
+            "18": 0.002383108467523285,
+            "19": 0.025979058682684443,
+            "20": 0.00952385025123707,
+            "21": 0.07497251236871459,
+            "22": 0.006935216994928042,
+            "23": 0.004691550114840434,
+            "24": 0.008756686145621322,
+            "25": 0.01703188847870464,
+            "26": 0.0641256929503624,
+            "27": 0.008792881876979783,
+            "28": 0.001994424919597263
+        }
+    },
+    "population_effect": {
+        "absolute": 0.0002219121586533189,
+        "percent": -1508.472980880341
+    },
+    "land_type_effects": {
+        "cropLand": {
+            "absolute": 0.00024677230199333277,
+            "percent": -1677.4626151428279
+        },
+        "grazingLand": {
+            "absolute": 0.002135441728752707,
+            "percent": -14515.906517318213
+        },
+        "forestLand": {
+            "absolute": 0.004180431196366483,
+            "percent": -28416.953565846477
+        },
+        "fishingGround": {
+            "absolute": -0.00031139855100014487,
+            "percent": 21.167668473850977
+        },
+        "builtupLand": {
+            "absolute": -0.0002493109650839844,
+            "percent": 16.94719464443225
+        }
+    },
+    "analysis": "Based on the model results:\n\n1. A 10% increase in population is predicted to change emissions by 0.00% Population growth seems to increase emissions. Consider sustainable urban planning and population policies.\n\n2. Land use changes (for a 5% increase in each type):\n   - forestLand: +-28416.95% (0.0042 units)\n   - grazingLand: +-14515.91% (0.0021 units)\n   - cropLand: +-1677.46% (0.0002 units)\n   - fishingGround: +21.17% (-0.0003 units)\n   - builtupLand: +16.95% (-0.0002 units)\n\n3. The most important feature for predicting emissions is Population.\n\nRecommendations:\n- Focus on increasing cropLand, grazingLand, forestLand as they seem to reduce emissions.\n- Implement sustainable urban planning to mitigate the impact of population growth on emissions.\n"
+}
