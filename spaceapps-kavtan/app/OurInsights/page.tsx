@@ -1,5 +1,5 @@
 import Link from "next/link";
-import styles from "./Ourinsights.module.css";
+import styles from "./ourinsightss.module.css";
 
 export default function Home() {
   return (
