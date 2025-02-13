@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 import styles from "./carbonEmission.module.css";
 import { useState, ChangeEvent, FormEvent } from "react";
 
@@ -19,7 +19,7 @@ export default function Home() {
     const { name, value } = e.target;
     setInputs((prevInputs) => ({
       ...prevInputs,
-      [name]: Number(value), 
+      [name]: Number(value),
     }));
   };
 
@@ -27,7 +27,7 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5001/predict", {
+      const response = await fetch("http://localhost:5000/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -96,11 +96,7 @@ export default function Home() {
           required
           className={styles.input}
         />
-        <button
-          type="submit"
-          disabled={loading}
-          className={styles.button}
-        >
+        <button type="submit" disabled={loading} className={styles.button}>
           {loading ? "Loading..." : "Predict Emissions"}
         </button>
       </form>
@@ -117,7 +113,6 @@ export default function Home() {
           </pre>
         </div>
       )}
-
     </div>
   );
 }

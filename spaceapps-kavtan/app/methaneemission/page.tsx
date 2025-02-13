@@ -1,6 +1,6 @@
-"use client"; 
+"use client";
 import { useState, ChangeEvent, FormEvent } from "react";
-import styles from './methane.module.css';
+import styles from "./methane.module.css";
 
 function OurInsights() {
   const [inputs, setInputs] = useState({
@@ -19,7 +19,7 @@ function OurInsights() {
     const { name, value } = e.target;
     setInputs((prevInputs) => ({
       ...prevInputs,
-      [name]: Number(value), 
+      [name]: Number(value),
     }));
   };
 
@@ -27,7 +27,7 @@ function OurInsights() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5002/analyze", {
+      const response = await fetch("http://localhost:5000/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +104,9 @@ function OurInsights() {
       {result && (
         <div className={styles.result}>
           <h2 className={styles.subheading}>Sensitivity Analysis Results:</h2>
-          <pre className={styles.observation}>{JSON.stringify(result, null, 2)}</pre>
+          <pre className={styles.observation}>
+            {JSON.stringify(result, null, 2)}
+          </pre>
         </div>
       )}
     </div>
