@@ -126,7 +126,7 @@ Nasa-Spaceapps-Challenge/
 - **Algorithm**: Random Forest Regression
 - **Features**: Land use categories and population density
 - **Target**: Methane emissions (tonnes/year)
-- **Validation**: Cross-validation with R² > 0.85
+- **Validation**: Cross-validation with R² > 0.93
 
 ### Frontend Technologies
 - **Next.js 14**: React framework with App Router
